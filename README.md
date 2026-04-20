@@ -43,6 +43,32 @@ Personal Ecosystem is a full-stack monorepo application built with modern techno
 
 - **Unit Testing**: [Vitest](https://vitest.dev/)
 
+## 🏛️ Architectural Design
+
+The project follows a **Modular, Feature-Based Architecture** designed for scalability, maintainability, and clear separation of concerns.
+
+### 🧩 Feature-Based Structure
+
+Both frontend and backend are organized into domain-specific modules (e.g., Finance, Auth, User). This allows for:
+
+- **Encapsulation**: All logic related to a specific feature (components, hooks, services, schemas, types) lives within its own directory.
+- **Easy Discovery**: Navigating the codebase is intuitive as functionality is grouped by business domain.
+- **Scalability**: New features can be added in isolation without cluttering global directories.
+
+### 🧹 Clean Code & Design Patterns
+
+- **Service-Repository Pattern (Backend)**: Separate request handling (Controllers), business logic (Services), and data access (Repositories) to ensure a high level of testability and separation of concerns.
+- **Schema-Driven Validation**: Using **Zod** for both frontend form validation and backend request parsing, ensuring data integrity across the stack.
+- **Modular Redux Slices**: State management is divided into logical slices that correspond to the feature modules.
+- **Domain Logic Separation**: Business rules are kept separate from framework-specific code, making the core logic easier to test and migrate if needed.
+- **SOLID Principles**: Focused application of SOLID principles, specifically **Single Responsibility** (ensuring each class/function has one job) and **Dependency Inversion** (using repositories to decouple services from the database implementation).
+
+### 🏢 Directory Breakdown
+
+- **`backend/src/modules`**: Contains the core business logic, divided by domain.
+- **`frontend-app/src/features`**: Houses feature-specific UI components, hooks, and state logic.
+- **`shared` / `lib`**: Centralized locations for reusable utilities, types, and cross-cutting concerns.
+
 ## 🚦 Getting Started
 
 ### Prerequisites
