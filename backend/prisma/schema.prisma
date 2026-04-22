@@ -28,6 +28,7 @@ model User {
   budgets      Budget[]
   bills        Bill[]
   savingGoals  SavingGoal[]
+  groceryItems GroceryItem[]
 }
 
 model Account {
@@ -152,4 +153,22 @@ model SavingContribution {
   description  String?
   date         DateTime   @default(now())
   createdAt    DateTime   @default(now())
+}
+
+model GroceryItem {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name          String
+  category      String?
+  quantity      Float     @default(1)
+  price         Decimal   @db.Decimal(20, 2) @default(0)
+  unit          String?
+  image         String?
+  expiryDate    DateTime?
+  status        String    @default("AVAILABLE")
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
