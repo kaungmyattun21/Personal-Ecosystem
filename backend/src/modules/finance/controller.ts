@@ -17,7 +17,7 @@ export const getAccounts = asyncHandler(async (req: Request, res: Response) => {
 
 export const getAccountById = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await financeService.getAccount(req.user!.id, req.params.id);
+    const result = await financeService.getAccount(req.user!.id, String(req.params.id));
     res.json(result);
   },
 );
@@ -26,7 +26,7 @@ export const updateAccount = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await financeService.updateAccount(
       req.user!.id,
-      req.params.id,
+      String(req.params.id),
       req.body,
     );
     res.json(result);
@@ -35,7 +35,7 @@ export const updateAccount = asyncHandler(
 
 export const deleteAccount = asyncHandler(
   async (req: Request, res: Response) => {
-    await financeService.deleteAccount(req.user!.id, req.params.id);
+    await financeService.deleteAccount(req.user!.id, String(req.params.id));
     res.status(204).end();
   },
 );
@@ -59,7 +59,7 @@ export const getCategoryById = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await financeService.getCategory(
       req.user!.id,
-      req.params.id,
+      String(req.params.id),
     );
     res.json(result);
   },
@@ -69,7 +69,7 @@ export const updateCategory = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await financeService.updateCategory(
       req.user!.id,
-      req.params.id,
+      String(req.params.id),
       req.body,
     );
     res.json(result);
@@ -78,7 +78,7 @@ export const updateCategory = asyncHandler(
 
 export const deleteCategory = asyncHandler(
   async (req: Request, res: Response) => {
-    await financeService.deleteCategory(req.user!.id, req.params.id);
+    await financeService.deleteCategory(req.user!.id, String(req.params.id));
     res.status(204).end();
   },
 );
@@ -105,7 +105,7 @@ export const getTransactionById = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await financeService.getTransaction(
       req.user!.id,
-      req.params.id,
+      String(req.params.id),
     );
     res.json(result);
   },
@@ -115,7 +115,7 @@ export const updateTransaction = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await financeService.updateTransaction(
       req.user!.id,
-      req.params.id,
+      String(req.params.id),
       req.body,
     );
     res.json(result);
@@ -124,7 +124,7 @@ export const updateTransaction = asyncHandler(
 
 export const deleteTransaction = asyncHandler(
   async (req: Request, res: Response) => {
-    await financeService.deleteTransaction(req.user!.id, req.params.id);
+    await financeService.deleteTransaction(req.user!.id, String(req.params.id));
     res.status(204).end();
   },
 );
@@ -153,7 +153,7 @@ export const updateBudget = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await financeService.updateBudget(
       req.user!.id,
-      req.params.id,
+      String(req.params.id),
       req.body,
     );
     res.json(result);
@@ -162,7 +162,7 @@ export const updateBudget = asyncHandler(
 
 export const deleteBudget = asyncHandler(
   async (req: Request, res: Response) => {
-    await financeService.deleteBudget(req.user!.id, req.params.id);
+    await financeService.deleteBudget(req.user!.id, String(req.params.id));
     res.status(204).end();
   },
 );
@@ -181,14 +181,14 @@ export const getBills = asyncHandler(async (req: Request, res: Response) => {
 export const updateBill = asyncHandler(async (req: Request, res: Response) => {
   const result = await financeService.updateBill(
     req.user!.id,
-    req.params.id,
+    String(req.params.id),
     req.body,
   );
   res.json(result);
 });
 
 export const deleteBill = asyncHandler(async (req: Request, res: Response) => {
-  await financeService.deleteBill(req.user!.id, req.params.id);
+  await financeService.deleteBill(req.user!.id, String(req.params.id));
   res.status(204).end();
 });
 
@@ -214,7 +214,7 @@ export const getSavingGoalById = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await financeService.getSavingGoal(
       req.user!.id,
-      req.params.id,
+      String(req.params.id),
     );
     res.json(result);
   },
@@ -224,7 +224,7 @@ export const updateSavingGoal = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await financeService.updateSavingGoal(
       req.user!.id,
-      req.params.id,
+      String(req.params.id),
       req.body,
     );
     res.json(result);
@@ -233,7 +233,7 @@ export const updateSavingGoal = asyncHandler(
 
 export const deleteSavingGoal = asyncHandler(
   async (req: Request, res: Response) => {
-    await financeService.deleteSavingGoal(req.user!.id, req.params.id);
+    await financeService.deleteSavingGoal(req.user!.id, String(req.params.id));
     res.status(204).end();
   },
 );
@@ -252,7 +252,7 @@ export const getSavingContributions = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await financeService.getSavingContributions(
       req.user!.id,
-      req.params.id,
+      String(req.params.id),
     );
     res.json(result);
   },

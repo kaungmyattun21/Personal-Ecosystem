@@ -1,20 +1,26 @@
 import { prisma } from "../../shared/db.js";
-import { CreateGroceryItemInput, UpdateGroceryItemInput } from "./types.js";
+import { Prisma } from "@prisma/client";
+import {
+  CreateGroceryItemInput,
+  UpdateGroceryItemInput,
+  CreateShoppingListInput,
+  UpdateShoppingListInput,
+} from "./types.js";
 
-export const createGroceryItem = async (userId: string, data: CreateGroceryItemInput) => {
-  return prisma.groceryItem.create({
-    data: {
-      userId,
-      ...data,
-    },
-  });
+export const createGroceryItem = async (
+  userId: string,
+  data: CreateGroceryItemInput,
+) => {
+  const input: Prisma.GroceryItemUncheckedCreateInput = { userId, ...data };
+  return prisma.groceryItem.create({ data: input });
 };
 
-export const createMultipleGroceryItems = async (userId: string, dataArray: CreateGroceryItemInput[]) => {
-  const data = dataArray.map((item) => ({ userId, ...item }));
-  return prisma.groceryItem.createMany({
-    data,
-  });
+export const createMultipleGroceryItems = async (
+  userId: string,
+  dataArray: CreateGroceryItemInput[],
+) => {
+  const data: Prisma.GroceryItemCreateManyInput[] = dataArray.map((item) => ({ userId, ...item }));
+  return prisma.groceryItem.createMany({ data });
 };
 
 export const findGroceryItems = async (userId: string) => {
@@ -30,7 +36,11 @@ export const findGroceryItemById = async (id: string, userId: string) => {
   });
 };
 
-export const updateGroceryItem = async (id: string, userId: string, data: UpdateGroceryItemInput) => {
+export const updateGroceryItem = async (
+  id: string,
+  userId: string,
+  data: UpdateGroceryItemInput,
+) => {
   return prisma.groceryItem.update({
     where: { id, userId },
     data,
@@ -49,5 +59,58 @@ export const deleteGroceryItems = async (userId: string, ids: string[]) => {
       userId,
       id: { in: ids },
     },
+  });
+};
+
+export const createShoppingList = async (
+  userId: string,
+  data: CreateShoppingListInput,
+) => {
+  const { items, ...listData } = data;
+  const itemsInput: Prisma.ShoppingListItemUncheckedCreateWithoutShoppingListInput[] = items ?? [];
+  return prisma.shoppingList.create({
+    data: {
+      userId,
+      ...listData,
+      items: {
+        create: itemsInput,
+      },
+    },
+    include: { items: true },
+  });
+};
+
+export const findShoppingLists = async (userId: string) => {
+  return prisma.shoppingList.findMany({
+    where: { userId },
+    include: { items: true },
+    orderBy: { createdAt: "desc" },
+  });
+};
+
+export const findShoppingListById = async (id: string, userId: string) => {
+  return prisma.shoppingList.findUnique({
+    where: { id, userId },
+    include: { items: true },
+  });
+};
+
+export const updateShoppingList = async (
+  id: string,
+  userId: string,
+  data: UpdateShoppingListInput,
+) => {
+  const { items, ...listData } = data;
+
+  return prisma.shoppingList.update({
+    where: { id, userId },
+    data: listData,
+    include: { items: true },
+  });
+};
+
+export const deleteShoppingList = async (id: string, userId: string) => {
+  return prisma.shoppingList.delete({
+    where: { id, userId },
   });
 };

@@ -34,7 +34,7 @@ export const getGroceryItems = async (req: Request, res: Response) => {
 export const getGroceryItem = async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
-    const item = await service.getGroceryItem(req.params.id, userId);
+    const item = await service.getGroceryItem(String(req.params.id), userId);
     res.json(item);
   } catch (error: any) {
     if (error.message === "Grocery item not found") {
@@ -48,7 +48,7 @@ export const getGroceryItem = async (req: Request, res: Response) => {
 export const updateGroceryItem = async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
-    const item = await service.updateGroceryItem(req.params.id, userId, req.body);
+    const item = await service.updateGroceryItem(String(req.params.id), userId, req.body);
     res.json(item);
   } catch (error: any) {
     if (error.message === "Grocery item not found") {
@@ -62,10 +62,72 @@ export const updateGroceryItem = async (req: Request, res: Response) => {
 export const removeGroceryItem = async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
-    await service.removeGroceryItem(req.params.id, userId);
+    await service.removeGroceryItem(String(req.params.id), userId);
     res.status(204).send();
   } catch (error: any) {
     if (error.message === "Grocery item not found") {
+      res.status(404).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const createShoppingList = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const list = await service.createShoppingList(userId, req.body);
+    res.status(201).json(list);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const getShoppingLists = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const lists = await service.getShoppingLists(userId);
+    res.json(lists);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getShoppingList = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const list = await service.getShoppingList(String(req.params.id), userId);
+    res.json(list);
+  } catch (error: any) {
+    if (error.message === "Shopping list not found") {
+      res.status(404).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const updateShoppingList = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const list = await service.updateShoppingList(String(req.params.id), userId, req.body);
+    res.json(list);
+  } catch (error: any) {
+    if (error.message === "Shopping list not found") {
+      res.status(404).json({ error: error.message });
+    } else {
+      res.status(400).json({ error: error.message });
+    }
+  }
+};
+
+export const removeShoppingList = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    await service.removeShoppingList(String(req.params.id), userId);
+    res.status(204).send();
+  } catch (error: any) {
+    if (error.message === "Shopping list not found") {
       res.status(404).json({ error: error.message });
     } else {
       res.status(500).json({ error: error.message });

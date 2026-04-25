@@ -25,3 +25,36 @@ export const updateGroceryItemSchema = z.object({
 export const bulkDeleteGroceryItemsSchema = z.object({
   ids: z.array(z.string()),
 });
+
+export const createShoppingListItemSchema = z.object({
+  groceryItemId: z.string().optional().nullable(),
+  name: z.string().min(1, "Item name is required"),
+  quantity: z.number().positive().default(1),
+  unit: z.string().optional().nullable(),
+  category: z.string().optional().nullable(),
+  image: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+});
+
+export const createShoppingListSchema = z.object({
+  name: z.string().min(1, "List name is required"),
+  items: z.array(createShoppingListItemSchema).optional().default([]),
+});
+
+export const updateShoppingListItemSchema = z.object({
+  id: z.string().optional(),
+  groceryItemId: z.string().optional().nullable(),
+  name: z.string().min(1).optional(),
+  quantity: z.number().positive().optional(),
+  unit: z.string().optional().nullable(),
+  category: z.string().optional().nullable(),
+  image: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+  isCompleted: z.boolean().optional(),
+});
+
+export const updateShoppingListSchema = z.object({
+  name: z.string().min(1).optional(),
+  status: z.enum(["ACTIVE", "ARCHIVED"]).optional(),
+  items: z.array(updateShoppingListItemSchema).optional(),
+});

@@ -29,4 +29,19 @@ router.put(
 );
 router.delete("/grocery-items/:id", controller.removeGroceryItem);
 
+// --- Shopping Lists ---
+router.post(
+  "/shopping-lists",
+  validateBody(schemas.createShoppingListSchema),
+  controller.createShoppingList,
+);
+router.get("/shopping-lists", controller.getShoppingLists);
+router.get("/shopping-lists/:id", controller.getShoppingList);
+router.put(
+  "/shopping-lists/:id",
+  validateBody(schemas.updateShoppingListSchema),
+  controller.updateShoppingList,
+);
+router.delete("/shopping-lists/:id", controller.removeShoppingList);
+
 export default router;

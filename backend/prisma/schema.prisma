@@ -2,7 +2,7 @@
 // User model: NextAuth-compatible for Credentials + OAuth
 
 generator client {
-  provider   = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -22,13 +22,14 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts     Account[]
-  categories   Category[]
-  transactions Transaction[]
-  budgets      Budget[]
-  bills        Bill[]
-  savingGoals  SavingGoal[]
-  groceryItems GroceryItem[]
+  accounts      Account[]
+  categories    Category[]
+  transactions  Transaction[]
+  budgets       Budget[]
+  bills         Bill[]
+  savingGoals   SavingGoal[]
+  groceryItems  GroceryItem[]
+  shoppingLists ShoppingList[]
 }
 
 model Account {
@@ -77,28 +78,28 @@ model Transaction {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  billId      String?
-  bill        Bill?     @relation(fields: [billId], references: [id], onDelete: SetNull)
-  budgetId    String?
-  budget      Budget?   @relation(fields: [budgetId], references: [id], onDelete: SetNull)
+  billId       String?
+  bill         Bill?       @relation(fields: [billId], references: [id], onDelete: SetNull)
+  budgetId     String?
+  budget       Budget?     @relation(fields: [budgetId], references: [id], onDelete: SetNull)
   savingGoalId String?
-  savingGoal  SavingGoal? @relation(fields: [savingGoalId], references: [id], onDelete: SetNull)
+  savingGoal   SavingGoal? @relation(fields: [savingGoalId], references: [id], onDelete: SetNull)
 }
 
 model Budget {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  name        String?   // Optional name for descriptive budgeting
-  amount      Decimal   @db.Decimal(20, 2)
-  spent       Decimal   @default(0) @db.Decimal(20, 2)
-  period      String    // 'MONTHLY', 'WEEKLY', 'YEARLY'
-  startDate   DateTime
-  endDate     DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name       String? // Optional name for descriptive budgeting
+  amount     Decimal   @db.Decimal(20, 2)
+  spent      Decimal   @default(0) @db.Decimal(20, 2)
+  period     String // 'MONTHLY', 'WEEKLY', 'YEARLY'
+  startDate  DateTime
+  endDate    DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   parentId     String?
   parent       Budget?       @relation("SubBudgets", fields: [parentId], references: [id], onDelete: Cascade)
@@ -107,38 +108,38 @@ model Budget {
 }
 
 model Bill {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  categoryId  String?
-  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  name        String
-  amount      Decimal  @db.Decimal(20, 2)
-  dueDate     DateTime
-  frequency   String // 'ONCE', 'MONTHLY', 'WEEKLY', 'YEARLY'
-  status      String   @default("UNPAID") // 'PAID', 'UNPAID', 'OVERDUE'
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  name       String
+  amount     Decimal   @db.Decimal(20, 2)
+  dueDate    DateTime
+  frequency  String // 'ONCE', 'MONTHLY', 'WEEKLY', 'YEARLY'
+  status     String    @default("UNPAID") // 'PAID', 'UNPAID', 'OVERDUE'
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   transactions Transaction[]
 }
 
 model SavingGoal {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   name          String
   targetAmount  Decimal   @db.Decimal(20, 2)
   currentAmount Decimal   @default(0) @db.Decimal(20, 2)
   targetDate    DateTime?
-  
-  color         String?
-  icon          String?
-  status        String    @default("IN_PROGRESS") // IN_PROGRESS, REACHED, PAUSED
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+
+  color  String?
+  icon   String?
+  status String  @default("IN_PROGRESS") // IN_PROGRESS, REACHED, PAUSED
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   transactions  Transaction[]
   contributions SavingContribution[]
@@ -149,26 +150,61 @@ model SavingContribution {
   savingGoalId String
   savingGoal   SavingGoal @relation(fields: [savingGoalId], references: [id], onDelete: Cascade)
   amount       Decimal    @db.Decimal(20, 2)
-  source       String     // 'INCOME', 'MANUAL', 'TRANSFER'
+  source       String // 'INCOME', 'MANUAL', 'TRANSFER'
   description  String?
   date         DateTime   @default(now())
   createdAt    DateTime   @default(now())
 }
 
 model GroceryItem {
-  id            String    @id @default(cuid())
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name       String
+  category   String?
+  quantity   Float     @default(1)
+  price      Decimal   @default(0) @db.Decimal(20, 2)
+  unit       String?
+  image      String?
+  expiryDate DateTime?
+  status     String    @default("AVAILABLE")
+
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  shoppingListItems ShoppingListItem[]
+}
+
+model ShoppingList {
+  id            String   @id @default(cuid())
   userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name          String
-  category      String?
-  quantity      Float     @default(1)
-  price         Decimal   @db.Decimal(20, 2) @default(0)
-  unit          String?
-  image         String?
-  expiryDate    DateTime?
-  status        String    @default("AVAILABLE")
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  estimatedCost Decimal  @default(0) @db.Decimal(20, 2)
+  status        String   @default("ACTIVE") // ACTIVE, ARCHIVED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  items ShoppingListItem[]
+}
+
+model ShoppingListItem {
+  id             String       @id @default(cuid())
+  shoppingListId String
+  shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+
+  groceryItemId String?
+  groceryItem   GroceryItem? @relation(fields: [groceryItemId], references: [id], onDelete: SetNull)
+
+  name     String
+  quantity Float   @default(1)
+  unit     String?
+  category String?
+  image    String?
+  notes    String?
+
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }

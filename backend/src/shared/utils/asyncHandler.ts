@@ -1,13 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import type { RequestHandler } from "express";
 
-type AsyncFunction = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => Promise<any>;
-
-export const asyncHandler = (fn: AsyncFunction) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    fn(req, res, next).catch(next);
-  };
-};
+/**
+ * In Express 5, async route handlers are natively supported —
+ * rejected promises are automatically forwarded to error handlers.
+ * This wrapper is kept for backwards compatibility but is now a no-op.
+ */
+export const asyncHandler = (fn: RequestHandler): RequestHandler => fn;
