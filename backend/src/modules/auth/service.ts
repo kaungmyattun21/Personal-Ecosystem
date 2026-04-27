@@ -6,7 +6,7 @@ import { AppError } from "../../shared/utils/AppError.js";
 import { seedDefaultCategories } from "./seedCategories.js";
 
 const SALT_ROUNDS = 10;
-const TOKEN_EXPIRY = "7d";
+const TOKEN_EXPIRY = "15m";
 
 export interface RegisterInput {
   email: string;
@@ -45,8 +45,8 @@ function createTokens(userId: string, email: string) {
 }
 
 export async function register(input: RegisterInput): Promise<AuthResponse> {
-  const existing = await repo.findByEmail(input.email);
-  if (existing) {
+  const existedEmail = await repo.findByEmail(input.email);
+  if (existedEmail) {
     throw new AppError("Email already registered", 409);
   }
 
