@@ -5,6 +5,8 @@ import {
   UpdateGroceryItemInput,
   CreateShoppingListInput,
   UpdateShoppingListInput,
+  CreateMealPlanInput,
+  UpdateMealPlanInput,
 } from "./types.js";
 
 export const createGroceryItem = async (
@@ -111,6 +113,63 @@ export const updateShoppingList = async (
 
 export const deleteShoppingList = async (id: string, userId: string) => {
   return prisma.shoppingList.delete({
+    where: { id, userId },
+  });
+};
+
+export const createMealPlan = async (
+  userId: string,
+  data: CreateMealPlanInput,
+) => {
+  const { meals, ...planData } = data;
+  const mealsInput: Prisma.MealCreateWithoutMealPlanInput[] = (meals ?? []).map((m: any) => ({
+    ...m,
+    ingredients: m.ingredients ? m.ingredients : undefined,
+  }));
+
+  return prisma.mealPlan.create({
+    data: {
+      userId,
+      ...planData,
+      meals: {
+        create: mealsInput,
+      },
+    },
+    include: { meals: true },
+  });
+};
+
+export const findMealPlans = async (userId: string) => {
+  return prisma.mealPlan.findMany({
+    where: { userId },
+    include: { meals: true },
+    orderBy: { startDate: "desc" },
+  });
+};
+
+export const findMealPlanById = async (id: string, userId: string) => {
+  return prisma.mealPlan.findUnique({
+    where: { id, userId },
+    include: { meals: true },
+  });
+};
+
+export const updateMealPlan = async (
+  id: string,
+  userId: string,
+  data: UpdateMealPlanInput,
+) => {
+  const { meals, ...planData } = data;
+
+  return prisma.mealPlan.update({
+    where: { id, userId },
+    data: planData,
+    include: { meals: true },
+  });
+};
+
+export const deleteMealPlan = async (id: string, userId: string) => {
+  return prisma.mealPlan.delete({
     where: { id, userId },
   });
 };

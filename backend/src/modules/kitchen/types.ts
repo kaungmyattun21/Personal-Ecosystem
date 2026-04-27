@@ -7,6 +7,10 @@ import {
   updateShoppingListSchema,
   createShoppingListItemSchema,
   updateShoppingListItemSchema,
+  createMealSchema,
+  updateMealSchema,
+  createMealPlanSchema,
+  updateMealPlanSchema,
 } from "./schemas.js";
 
 export type CreateGroceryItemInput = z.infer<typeof createGroceryItemSchema>;
@@ -31,3 +35,8 @@ export interface IGroceryItem {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type CreateMealInput = z.infer<typeof createMealSchema>;
+export type UpdateMealInput = z.infer<typeof updateMealSchema>;
+export type CreateMealPlanInput = z.infer<typeof createMealPlanSchema>;
+export type UpdateMealPlanInput = z.infer<typeof updateMealPlanSchema>;

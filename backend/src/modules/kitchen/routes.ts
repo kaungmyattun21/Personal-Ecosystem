@@ -44,4 +44,19 @@ router.put(
 );
 router.delete("/shopping-lists/:id", controller.removeShoppingList);
 
+// --- Meal Plans ---
+router.post(
+  "/meal-plans",
+  validateBody(schemas.createMealPlanSchema),
+  controller.createMealPlan,
+);
+router.get("/meal-plans", controller.getMealPlans);
+router.get("/meal-plans/:id", controller.getMealPlan);
+router.put(
+  "/meal-plans/:id",
+  validateBody(schemas.updateMealPlanSchema),
+  controller.updateMealPlan,
+);
+router.delete("/meal-plans/:id", controller.removeMealPlan);
+
 export default router;

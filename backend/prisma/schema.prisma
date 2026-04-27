@@ -30,6 +30,7 @@ model User {
   savingGoals   SavingGoal[]
   groceryItems  GroceryItem[]
   shoppingLists ShoppingList[]
+  mealPlans     MealPlan[]
 }
 
 model Account {
@@ -207,4 +208,31 @@ model ShoppingListItem {
   completedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model MealPlan {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startDate DateTime
+  endDate   DateTime
+  status    String   @default("ACTIVE") // ACTIVE, ARCHIVED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  meals     Meal[]
+}
+
+model Meal {
+  id          String   @id @default(cuid())
+  mealPlanId  String
+  mealPlan    MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  date        DateTime
+  type        String   // 'BREAKFAST', 'LUNCH', 'DINNER', 'SNACK'
+  name        String
+  notes       String?
+  ingredients Json?    // Array of ingredients { name, quantity, unit }
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

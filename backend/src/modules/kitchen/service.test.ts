@@ -6,8 +6,10 @@ import {
   UpdateGroceryItemInput,
   CreateShoppingListInput,
   UpdateShoppingListInput,
+  CreateMealPlanInput,
+  UpdateMealPlanInput,
 } from "./types.js";
-import { GroceryItem, ShoppingList } from "@prisma/client";
+import { GroceryItem, ShoppingList, ShoppingListItem, MealPlan, Meal } from "@prisma/client";
 
 vi.mock("./repository.js");
 
@@ -32,7 +34,7 @@ describe("Kitchen Service", () => {
         id: "item_1",
         userId,
         ...data,
-      } as any);
+      } as unknown as GroceryItem);
 
       const result = await service.addGroceryItem(userId, data);
 
@@ -61,7 +63,7 @@ describe("Kitchen Service", () => {
       ];
       vi.mocked(repo.createMultipleGroceryItems).mockResolvedValue({
         count: 2,
-      } as any);
+      });
 
       const result = await service.addMultipleGroceryItems(userId, dataArray);
 
@@ -80,7 +82,7 @@ describe("Kitchen Service", () => {
 
     it("should get all grocery items", async () => {
       const mockItems = [{ id: "item_1", name: "Apple" }];
-      vi.mocked(repo.findGroceryItems).mockResolvedValue(mockItems as any);
+      vi.mocked(repo.findGroceryItems).mockResolvedValue(mockItems as unknown as GroceryItem[]);
 
       const result = await service.getGroceryItems(userId);
 
@@ -90,7 +92,7 @@ describe("Kitchen Service", () => {
 
     it("should get a single grocery item", async () => {
       const mockItem = { id: "item_1", name: "Apple" };
-      vi.mocked(repo.findGroceryItemById).mockResolvedValue(mockItem as any);
+      vi.mocked(repo.findGroceryItemById).mockResolvedValue(mockItem as unknown as GroceryItem);
 
       const result = await service.getGroceryItem("item_1", userId);
 
@@ -110,11 +112,11 @@ describe("Kitchen Service", () => {
       const updateData = { quantity: 10 };
       vi.mocked(repo.findGroceryItemById).mockResolvedValue({
         id: "item_1",
-      } as any);
+      } as unknown as GroceryItem);
       vi.mocked(repo.updateGroceryItem).mockResolvedValue({
         id: "item_1",
         ...updateData,
-      } as any);
+      } as unknown as GroceryItem);
 
       const result = await service.updateGroceryItem(
         "item_1",
@@ -133,10 +135,10 @@ describe("Kitchen Service", () => {
     it("should delete grocery item", async () => {
       vi.mocked(repo.findGroceryItemById).mockResolvedValue({
         id: "item_1",
-      } as any);
+      } as unknown as GroceryItem);
       vi.mocked(repo.deleteGroceryItem).mockResolvedValue({
         id: "item_1",
-      } as any);
+      } as unknown as GroceryItem);
 
       await service.removeGroceryItem("item_1", userId);
 
@@ -151,7 +153,7 @@ describe("Kitchen Service", () => {
         id: "list_1",
         userId,
         ...data,
-      } as any);
+      } as unknown as ShoppingList & { items: ShoppingListItem[] });
 
       const result = await service.createShoppingList(userId, data);
 
@@ -161,7 +163,7 @@ describe("Kitchen Service", () => {
 
     it("should get all shopping lists", async () => {
       const mockLists = [{ id: "list_1", name: "Weekly List" }];
-      vi.mocked(repo.findShoppingLists).mockResolvedValue(mockLists as any);
+      vi.mocked(repo.findShoppingLists).mockResolvedValue(mockLists as unknown as (ShoppingList & { items: ShoppingListItem[] })[]);
 
       const result = await service.getShoppingLists(userId);
 
@@ -171,7 +173,7 @@ describe("Kitchen Service", () => {
 
     it("should get a single shopping list", async () => {
       const mockList = { id: "list_1", name: "Weekly List" };
-      vi.mocked(repo.findShoppingListById).mockResolvedValue(mockList as any);
+      vi.mocked(repo.findShoppingListById).mockResolvedValue(mockList as unknown as ShoppingList & { items: ShoppingListItem[] });
 
       const result = await service.getShoppingList("list_1", userId);
 
@@ -191,11 +193,11 @@ describe("Kitchen Service", () => {
       const updateData = { name: "Updated Name" };
       vi.mocked(repo.findShoppingListById).mockResolvedValue({
         id: "list_1",
-      } as any);
+      } as unknown as ShoppingList & { items: ShoppingListItem[] });
       vi.mocked(repo.updateShoppingList).mockResolvedValue({
         id: "list_1",
         ...updateData,
-      } as any);
+      } as unknown as ShoppingList & { items: ShoppingListItem[] });
 
       const result = await service.updateShoppingList(
         "list_1",
@@ -214,14 +216,98 @@ describe("Kitchen Service", () => {
     it("should delete shopping list", async () => {
       vi.mocked(repo.findShoppingListById).mockResolvedValue({
         id: "list_1",
-      } as any);
+      } as unknown as ShoppingList & { items: ShoppingListItem[] });
       vi.mocked(repo.deleteShoppingList).mockResolvedValue({
         id: "list_1",
-      } as any);
+      } as unknown as ShoppingList & { items: ShoppingListItem[] });
 
       await service.removeShoppingList("list_1", userId);
 
       expect(repo.deleteShoppingList).toHaveBeenCalledWith("list_1", userId);
     });
+  describe("Meal Plans", () => {
+    it("should create a meal plan", async () => {
+      const data: CreateMealPlanInput = {
+        startDate: new Date(),
+        endDate: new Date(),
+        meals: [],
+      };
+      vi.mocked(repo.createMealPlan).mockResolvedValue({
+        id: "mp_1",
+        userId,
+        ...data,
+      } as unknown as MealPlan & { meals: Meal[] });
+
+      const result = await service.createMealPlan(userId, data);
+
+      expect(repo.createMealPlan).toHaveBeenCalledWith(userId, data);
+      expect(result.id).toBe("mp_1");
+    });
+
+    it("should get all meal plans", async () => {
+      const mockPlans = [{ id: "mp_1" }];
+      vi.mocked(repo.findMealPlans).mockResolvedValue(mockPlans as unknown as (MealPlan & { meals: Meal[] })[]);
+
+      const result = await service.getMealPlans(userId);
+
+      expect(repo.findMealPlans).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(mockPlans);
+    });
+
+    it("should get a single meal plan", async () => {
+      const mockPlan = { id: "mp_1" };
+      vi.mocked(repo.findMealPlanById).mockResolvedValue(mockPlan as unknown as MealPlan & { meals: Meal[] });
+
+      const result = await service.getMealPlan("mp_1", userId);
+
+      expect(repo.findMealPlanById).toHaveBeenCalledWith("mp_1", userId);
+      expect(result).toEqual(mockPlan);
+    });
+
+    it("should throw AppError if getting non-existent meal plan", async () => {
+      vi.mocked(repo.findMealPlanById).mockResolvedValue(null);
+
+      await expect(service.getMealPlan("mp_1", userId)).rejects.toThrow(
+        "Meal plan not found"
+      );
+    });
+
+    it("should update meal plan", async () => {
+      const updateData = { status: "ARCHIVED" as const };
+      vi.mocked(repo.findMealPlanById).mockResolvedValue({
+        id: "mp_1",
+      } as unknown as MealPlan & { meals: Meal[] });
+      vi.mocked(repo.updateMealPlan).mockResolvedValue({
+        id: "mp_1",
+        ...updateData,
+      } as unknown as MealPlan & { meals: Meal[] });
+
+      const result = await service.updateMealPlan(
+        "mp_1",
+        userId,
+        updateData,
+      );
+
+      expect(repo.updateMealPlan).toHaveBeenCalledWith(
+        "mp_1",
+        userId,
+        updateData,
+      );
+      expect(result.status).toBe("ARCHIVED");
+    });
+
+    it("should delete meal plan", async () => {
+      vi.mocked(repo.findMealPlanById).mockResolvedValue({
+        id: "mp_1",
+      } as unknown as MealPlan & { meals: Meal[] });
+      vi.mocked(repo.deleteMealPlan).mockResolvedValue({
+        id: "mp_1",
+      } as unknown as MealPlan & { meals: Meal[] });
+
+      await service.removeMealPlan("mp_1", userId);
+
+      expect(repo.deleteMealPlan).toHaveBeenCalledWith("mp_1", userId);
+    });
   });
+});
 });

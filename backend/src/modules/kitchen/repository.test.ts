@@ -6,8 +6,10 @@ import {
   CreateShoppingListInput,
   UpdateGroceryItemInput,
   UpdateShoppingListInput,
+  CreateMealPlanInput,
+  UpdateMealPlanInput,
 } from "./types.js";
-import { GroceryItem, ShoppingList, ShoppingListItem } from "@prisma/client";
+import { GroceryItem, ShoppingList, ShoppingListItem, MealPlan, Meal, Prisma } from "@prisma/client";
 
 vi.mock("../../shared/db.js", () => {
   return {
@@ -28,6 +30,19 @@ vi.mock("../../shared/db.js", () => {
         delete: vi.fn(),
       },
       shoppingListItem: {
+        create: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+        deleteMany: vi.fn(),
+      },
+      mealPlan: {
+        create: vi.fn(),
+        findMany: vi.fn(),
+        findUnique: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+      },
+      meal: {
         create: vi.fn(),
         update: vi.fn(),
         delete: vi.fn(),
@@ -80,7 +95,7 @@ describe("Kitchen Repository", () => {
     };
 
     vi.mocked(prisma.groceryItem.create).mockResolvedValue(
-      mockCreated as GroceryItem,
+      mockCreated as unknown as GroceryItem,
     );
 
     const result = await repository.createGroceryItem(userId, data);
@@ -119,7 +134,7 @@ describe("Kitchen Repository", () => {
   it("should find grocery items by user", async () => {
     const mockItems = [
       { id: "item_1", name: "Apple", userId },
-    ] as GroceryItem[];
+    ] as unknown as GroceryItem[];
     vi.mocked(prisma.groceryItem.findMany).mockResolvedValue(mockItems);
 
     const result = await repository.findGroceryItems(userId);
@@ -132,7 +147,7 @@ describe("Kitchen Repository", () => {
   });
 
   it("should find grocery item by id", async () => {
-    const mockItem = { id: "item_1", name: "Apple", userId } as GroceryItem;
+    const mockItem = { id: "item_1", name: "Apple", userId } as unknown as GroceryItem;
     vi.mocked(prisma.groceryItem.findUnique).mockResolvedValue(mockItem);
 
     const result = await repository.findGroceryItemById("item_1", userId);
@@ -145,7 +160,7 @@ describe("Kitchen Repository", () => {
 
   it("should update grocery item", async () => {
     const updateData: UpdateGroceryItemInput = { quantity: 10 };
-    const mockUpdated = { id: "item_1", userId, ...updateData } as GroceryItem;
+    const mockUpdated = { id: "item_1", userId, ...updateData } as unknown as GroceryItem;
     vi.mocked(prisma.groceryItem.update).mockResolvedValue(mockUpdated);
 
     const result = await repository.updateGroceryItem(
@@ -162,7 +177,7 @@ describe("Kitchen Repository", () => {
   });
 
   it("should delete grocery item", async () => {
-    const mockDeleted = { id: "item_1", userId } as GroceryItem;
+    const mockDeleted = { id: "item_1", userId } as unknown as GroceryItem;
     vi.mocked(prisma.groceryItem.delete).mockResolvedValue(mockDeleted);
 
     const result = await repository.deleteGroceryItem("item_1", userId);
@@ -206,7 +221,7 @@ describe("Kitchen Repository", () => {
       };
 
       vi.mocked(prisma.shoppingList.create).mockResolvedValue(
-        mockCreated as any,
+        mockCreated as unknown as ShoppingList,
       );
 
       const result = await repository.createShoppingList(userId, data);
@@ -227,7 +242,7 @@ describe("Kitchen Repository", () => {
     it("should find shopping lists by user", async () => {
       const mockLists = [
         { id: "list_1", name: "Weekly Groceries", items: [], userId },
-      ] as any[];
+      ] as unknown as ShoppingList[];
       vi.mocked(prisma.shoppingList.findMany).mockResolvedValue(mockLists);
 
       const result = await repository.findShoppingLists(userId);
@@ -246,7 +261,7 @@ describe("Kitchen Repository", () => {
         name: "Weekly Groceries",
         items: [],
         userId,
-      } as any;
+      } as unknown as ShoppingList;
       vi.mocked(prisma.shoppingList.findUnique).mockResolvedValue(mockList);
 
       const result = await repository.findShoppingListById("list_1", userId);
@@ -260,7 +275,7 @@ describe("Kitchen Repository", () => {
 
     it("should update shopping list", async () => {
       const updateData: UpdateShoppingListInput = { name: "Updated List" };
-      const mockUpdated = { id: "list_1", userId, ...updateData } as any;
+      const mockUpdated = { id: "list_1", userId, ...updateData } as unknown as ShoppingList;
       vi.mocked(prisma.shoppingList.update).mockResolvedValue(mockUpdated);
 
       const result = await repository.updateShoppingList(
@@ -278,7 +293,7 @@ describe("Kitchen Repository", () => {
     });
 
     it("should delete shopping list", async () => {
-      const mockDeleted = { id: "list_1", userId } as any;
+      const mockDeleted = { id: "list_1", userId } as unknown as ShoppingList;
       vi.mocked(prisma.shoppingList.delete).mockResolvedValue(mockDeleted);
 
       const result = await repository.deleteShoppingList("list_1", userId);
@@ -288,5 +303,114 @@ describe("Kitchen Repository", () => {
       });
       expect(result).toEqual(mockDeleted);
     });
+  describe("Meal Plan", () => {
+    it("should create a meal plan with meals", async () => {
+      const data: CreateMealPlanInput = {
+        startDate: new Date("2026-05-01"),
+        endDate: new Date("2026-05-07"),
+        meals: [
+          {
+            date: new Date("2026-05-01"),
+            type: "BREAKFAST",
+            name: "Oatmeal",
+            ingredients: [{ name: "Oats", quantity: 1, unit: "cup" }],
+          },
+        ],
+      };
+      
+      const mockCreated = {
+        id: "mp_1",
+        userId,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        status: "ACTIVE",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        meals: data.meals.map((m, i) => ({
+          id: `meal_${i}`,
+          mealPlanId: "mp_1",
+          ...m,
+          notes: null,
+          isCompleted: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })),
+      };
+
+      vi.mocked(prisma.mealPlan.create).mockResolvedValue(mockCreated as unknown as MealPlan);
+
+      const result = await repository.createMealPlan(userId, data);
+
+      expect(prisma.mealPlan.create).toHaveBeenCalledWith({
+        data: {
+          userId,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          meals: {
+            create: data.meals.map(m => ({
+               ...m,
+               ingredients: m.ingredients ? (m.ingredients as Prisma.InputJsonValue) : undefined
+            })),
+          },
+        },
+        include: { meals: true },
+      });
+      expect(result).toEqual(mockCreated);
+    });
+
+    it("should find meal plans by user", async () => {
+      const mockPlans = [{ id: "mp_1", userId, meals: [] }] as unknown as MealPlan[];
+      vi.mocked(prisma.mealPlan.findMany).mockResolvedValue(mockPlans);
+
+      const result = await repository.findMealPlans(userId);
+
+      expect(prisma.mealPlan.findMany).toHaveBeenCalledWith({
+        where: { userId },
+        include: { meals: true },
+        orderBy: { startDate: "desc" },
+      });
+      expect(result).toEqual(mockPlans);
+    });
+
+    it("should find meal plan by id", async () => {
+      const mockPlan = { id: "mp_1", userId, meals: [] } as unknown as MealPlan;
+      vi.mocked(prisma.mealPlan.findUnique).mockResolvedValue(mockPlan);
+
+      const result = await repository.findMealPlanById("mp_1", userId);
+
+      expect(prisma.mealPlan.findUnique).toHaveBeenCalledWith({
+        where: { id: "mp_1", userId },
+        include: { meals: true },
+      });
+      expect(result).toEqual(mockPlan);
+    });
+
+    it("should update meal plan", async () => {
+      const updateData: UpdateMealPlanInput = { status: "ARCHIVED" };
+      const mockUpdated = { id: "mp_1", userId, status: "ARCHIVED" } as unknown as MealPlan;
+      vi.mocked(prisma.mealPlan.update).mockResolvedValue(mockUpdated);
+
+      const result = await repository.updateMealPlan("mp_1", userId, updateData);
+
+      expect(prisma.mealPlan.update).toHaveBeenCalledWith({
+        where: { id: "mp_1", userId },
+        data: { status: "ARCHIVED" },
+        include: { meals: true },
+      });
+      expect(result).toEqual(mockUpdated);
+    });
+
+    it("should delete meal plan", async () => {
+      const mockDeleted = { id: "mp_1", userId } as unknown as MealPlan;
+      vi.mocked(prisma.mealPlan.delete).mockResolvedValue(mockDeleted);
+
+      const result = await repository.deleteMealPlan("mp_1", userId);
+
+      expect(prisma.mealPlan.delete).toHaveBeenCalledWith({
+        where: { id: "mp_1", userId },
+      });
+      expect(result).toEqual(mockDeleted);
+    });
   });
+});
 });

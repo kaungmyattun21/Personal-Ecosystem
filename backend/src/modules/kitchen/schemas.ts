@@ -58,3 +58,42 @@ export const updateShoppingListSchema = z.object({
   status: z.enum(["ACTIVE", "ARCHIVED"]).optional(),
   items: z.array(updateShoppingListItemSchema).optional(),
 });
+
+export const createMealSchema = z.object({
+  date: z.string().datetime().or(z.date()),
+  type: z.enum(["BREAKFAST", "LUNCH", "DINNER", "SNACK"]),
+  name: z.string().min(1, "Meal name is required"),
+  notes: z.string().optional().nullable(),
+  ingredients: z.array(z.object({
+    name: z.string(),
+    quantity: z.number(),
+    unit: z.string().optional().nullable()
+  })).optional().nullable()
+});
+
+export const createMealPlanSchema = z.object({
+  startDate: z.string().datetime().or(z.date()),
+  endDate: z.string().datetime().or(z.date()),
+  meals: z.array(createMealSchema).optional().default([]),
+});
+
+export const updateMealSchema = z.object({
+  id: z.string().optional(),
+  date: z.string().datetime().or(z.date()).optional(),
+  type: z.enum(["BREAKFAST", "LUNCH", "DINNER", "SNACK"]).optional(),
+  name: z.string().min(1).optional(),
+  notes: z.string().optional().nullable(),
+  ingredients: z.array(z.object({
+    name: z.string(),
+    quantity: z.number(),
+    unit: z.string().optional().nullable()
+  })).optional().nullable(),
+  isCompleted: z.boolean().optional(),
+});
+
+export const updateMealPlanSchema = z.object({
+  startDate: z.string().datetime().or(z.date()).optional(),
+  endDate: z.string().datetime().or(z.date()).optional(),
+  status: z.enum(["ACTIVE", "ARCHIVED"]).optional(),
+  meals: z.array(updateMealSchema).optional(),
+});
