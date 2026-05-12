@@ -10,12 +10,6 @@ import {
 import { useGroceryForm } from "../hooks/useGroceryForm";
 import { GroceryFormView } from "../view/GroceryFormView";
 
-/**
- * AddGroceryForm Container
- *
- * Orchestrates the Grocery Form by connecting the Controller Hook
- * to the Pure View Component within a Dialog.
- */
 export function AddGroceryForm() {
   const ctrl = useGroceryForm();
 

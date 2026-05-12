@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Save } from "lucide-react";
 import { FormField } from "@/components/ui/form-field";
 
-// Bypassing TypeScript resolution issues for FormProvider
 const FormProvider = (RHF as any).FormProvider;
 
 interface GroceryFormViewProps {

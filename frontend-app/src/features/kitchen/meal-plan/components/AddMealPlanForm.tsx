@@ -10,9 +10,6 @@ import {
 import { useMealPlanForm } from "../hooks/useMealPlanForm";
 import { MealPlanFormView } from "../view/MealPlanFormView";
 
-/**
- * AddMealPlanForm Container
- */
 export function AddMealPlanForm() {
   const ctrl = useMealPlanForm();
 

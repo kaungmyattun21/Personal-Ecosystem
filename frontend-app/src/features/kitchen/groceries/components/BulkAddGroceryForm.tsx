@@ -24,14 +24,14 @@ export function BulkAddGroceryForm() {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] lg:max-w-[1400px] p-0 overflow-hidden rounded-[2.5rem] border-none bg-white dark:bg-zinc-950 shadow-2xl">
-        <DialogHeader className="p-8 pb-0">
+      <DialogContent className="max-w-[95vw] lg:max-w-[1400px] rounded-[40px] border border-brand-teal/20 dark:border-brand-teal/40 bg-white/80 dark:bg-brand-bg-dark/80 backdrop-blur-2xl shadow-lg p-0 overflow-hidden max-h-[90vh] flex flex-col">
+        <DialogHeader className="p-10 pb-2 flex flex-row items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-2xl bg-brand-teal/10 flex items-center justify-center">
               <div className="h-6 w-6 rounded-lg bg-brand-teal" />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+              <DialogTitle className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight italic">
                 Batch Grocery Entry
               </DialogTitle>
               <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">
