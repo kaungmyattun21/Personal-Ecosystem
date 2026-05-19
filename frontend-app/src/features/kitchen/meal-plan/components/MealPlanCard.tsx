@@ -15,44 +15,72 @@ export function MealPlanCard({ plan, onEdit, onDelete, onView }: MealPlanCardPro
   const mealCount = plan.meals?.length || 0;
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardHeader className="p-4 pb-2">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-2">
-            <CalendarDays className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg font-bold">
+    <Card className="group relative overflow-hidden rounded-[32px] border-none bg-white/50 dark:bg-white/5 backdrop-blur-md shadow-sm transition-all duration-300 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]">
+      <div className="absolute top-0 right-0 p-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={(e) => { e.stopPropagation(); onEdit(plan); }}
+          className="h-10 w-10 rounded-xl bg-white/80 dark:bg-black/40 backdrop-blur-md shadow-sm text-slate-600 hover:text-brand-teal"
+        >
+          <Edit2 className="h-4 w-4" />
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={(e) => { e.stopPropagation(); onDelete(plan.id); }}
+          className="h-10 w-10 rounded-xl bg-white/80 dark:bg-black/40 backdrop-blur-md shadow-sm text-red-400 hover:text-red-500 hover:bg-red-50"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="p-8 space-y-6 cursor-pointer" onClick={() => onView(plan.id)}>
+        <div className="flex items-center gap-4">
+          <div className="h-14 w-14 rounded-2xl bg-brand-teal/10 flex items-center justify-center">
+            <CalendarDays className="h-7 w-7 text-brand-teal" />
+          </div>
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-teal/70">
+              Meal Plan
+            </p>
+            <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight italic">
               {format(new Date(plan.startDate), "MMM d")} - {format(new Date(plan.endDate), "MMM d")}
-            </CardTitle>
-          </div>
-          <div className="flex gap-1">
-            <Button variant="ghost" size="icon" onClick={() => onEdit(plan)}>
-              <Edit2 className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-red-500" onClick={() => onDelete(plan.id)}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            </h3>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="p-4 py-2">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Utensils className="h-4 w-4" />
-          <span>{mealCount} scheduled meals</span>
-        </div>
-        <div className="mt-4">
-          <span className={`px-2 py-1 rounded text-xs font-semibold ${
-            plan.status === "ACTIVE" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"
+
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-2">
+            <div className="flex -space-x-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-6 w-6 rounded-full border-2 border-white dark:border-zinc-900 bg-slate-100 dark:bg-zinc-800 flex items-center justify-center">
+                  <Utensils size={10} className="text-slate-400" />
+                </div>
+              ))}
+            </div>
+            <span className="text-xs font-bold text-slate-500 dark:text-zinc-400">
+              {mealCount} meals scheduled
+            </span>
+          </div>
+          
+          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+            plan.status === "ACTIVE" 
+              ? "bg-brand-emerald/10 text-brand-emerald" 
+              : "bg-slate-100 text-slate-500"
           }`}>
             {plan.status}
           </span>
         </div>
-      </CardContent>
-      <CardFooter className="p-4 pt-2">
-        <Button variant="outline" className="w-full group" onClick={() => onView(plan.id)}>
-          View Plan
-          <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+
+        <Button 
+          variant="outline" 
+          className="w-full h-12 rounded-2xl border-2 border-brand-teal/20 text-brand-teal font-black uppercase tracking-widest hover:bg-brand-teal/5 gap-2 group/btn"
+        >
+          View Weekly Plan
+          <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
         </Button>
-      </CardFooter>
+      </div>
     </Card>
   );
 }

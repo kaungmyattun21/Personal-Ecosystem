@@ -5,10 +5,11 @@ interface KitchenUIState {
   isAddGroceryModalOpen: boolean;
   isBulkAddGroceryModalOpen: boolean;
   isAddShoppingListModalOpen: boolean;
-  isAddMealPlanModalOpen: boolean;
+  isMealPlanEditorOpen: boolean;
   editingGroceryItemId: string | null;
   editingShoppingListId: string | null;
   editingMealPlanId: string | null;
+  viewingMealPlanId: string | null;
 }
 
 const initialState: KitchenUIState = {
@@ -16,10 +17,11 @@ const initialState: KitchenUIState = {
   isAddGroceryModalOpen: false,
   isBulkAddGroceryModalOpen: false,
   isAddShoppingListModalOpen: false,
-  isAddMealPlanModalOpen: false,
+  isMealPlanEditorOpen: false,
   editingGroceryItemId: null,
   editingShoppingListId: null,
   editingMealPlanId: null,
+  viewingMealPlanId: null,
 };
 
 export const kitchenSlice = createSlice({
@@ -48,13 +50,16 @@ export const kitchenSlice = createSlice({
       state.editingShoppingListId = action.payload;
       state.isAddShoppingListModalOpen = true;
     },
-    setAddMealPlanModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isAddMealPlanModalOpen = action.payload;
+    setMealPlanEditorOpen: (state, action: PayloadAction<boolean>) => {
+      state.isMealPlanEditorOpen = action.payload;
       if (!action.payload) state.editingMealPlanId = null;
     },
     openEditMealPlan: (state, action: PayloadAction<string>) => {
       state.editingMealPlanId = action.payload;
-      state.isAddMealPlanModalOpen = true;
+      state.isMealPlanEditorOpen = true;
+    },
+    setViewingMealPlanId: (state, action: PayloadAction<string | null>) => {
+      state.viewingMealPlanId = action.payload;
     },
   },
 });
@@ -66,8 +71,9 @@ export const {
   openEditGrocery,
   setAddShoppingListModalOpen,
   openEditShoppingList,
-  setAddMealPlanModalOpen,
+  setMealPlanEditorOpen,
   openEditMealPlan,
+  setViewingMealPlanId,
 } = kitchenSlice.actions;
 
 export default kitchenSlice.reducer;

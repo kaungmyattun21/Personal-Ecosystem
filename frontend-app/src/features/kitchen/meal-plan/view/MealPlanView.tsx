@@ -2,13 +2,23 @@
 
 import { useMealPlanController } from "../hooks/useMealPlanController";
 import { MealPlanCard } from "../components/MealPlanCard";
+import { WeeklyMealPlanView } from "./WeeklyMealPlanView";
+import { MealPlanEditorView } from "./MealPlanEditorView";
 import { Button } from "@/components/ui/button";
 import { Plus, Loader2 } from "lucide-react";
 
 export function MealPlanView() {
   const {
     plans,
+    viewingMealPlanId,
+    isMealPlanEditorOpen,
     isLoading,
+    selectedDay,
+    setSelectedDay,
+    viewMode,
+    setViewMode,
+    getDaysInterval,
+    getMealsForDay,
     handleDelete,
     handleEdit,
     handleCreate,
@@ -20,6 +30,27 @@ export function MealPlanView() {
       <div className="flex justify-center items-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
+    );
+  }
+
+  if (isMealPlanEditorOpen) {
+    return <MealPlanEditorView />;
+  }
+
+  const viewingPlan = plans.find((p) => p.id === viewingMealPlanId);
+
+  if (viewingPlan) {
+    return (
+      <WeeklyMealPlanView 
+        plan={viewingPlan} 
+        days={getDaysInterval(viewingPlan)}
+        selectedDay={selectedDay}
+        setSelectedDay={setSelectedDay}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        getMealsForDay={(day) => getMealsForDay(viewingPlan, day)}
+        onBack={() => handleView(null)} 
+      />
     );
   }
 

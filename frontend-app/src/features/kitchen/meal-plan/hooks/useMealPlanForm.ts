@@ -1,14 +1,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import * as RHF from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
-import { setAddMealPlanModalOpen } from "@/lib/store/features/kitchen/kitchen-slice";
+import { setMealPlanEditorOpen } from "@/lib/store/features/kitchen/kitchen-slice";
 import { useMealPlan } from "./useMealPlan";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { mapMealPlanFormToPayload } from "../utils/mapMealPlanFormToPayload";
 import { mapMealPlanToFormValues } from "../utils/mapMealPlanToFormValues";
-import { mealPlanFormSchema, MealPlanFormValues, MEAL_PLAN_FORM_DEFAULTS, MEAL_FORM_DEFAULTS } from "../mealPlanSchema";
+import {
+  mealPlanFormSchema,
+  MealPlanFormValues,
+  MEAL_PLAN_FORM_DEFAULTS,
+  MEAL_FORM_DEFAULTS,
+} from "../mealPlanSchema";
 import { useGroceries } from "../../groceries/hooks/useGroceries";
 
 const useForm = (RHF as any).useForm;
@@ -16,8 +22,8 @@ const useFieldArray = (RHF as any).useFieldArray;
 
 export function useMealPlanForm() {
   const dispatch = useDispatch();
-  const { isAddMealPlanModalOpen, editingMealPlanId } = useSelector(
-    (state: RootState) => state.kitchen
+  const { isMealPlanEditorOpen, editingMealPlanId } = useSelector(
+    (state: RootState) => state.kitchen,
   );
   const { mealPlans, createMealPlan, updateMealPlan } = useMealPlan();
   const { groceryItems } = useGroceries();
@@ -40,7 +46,43 @@ export function useMealPlanForm() {
     if (editingPlan) {
       form.reset(mapMealPlanToFormValues(editingPlan));
     } else {
-      form.reset(MEAL_PLAN_FORM_DEFAULTS);
+      // Initialize with a week of empty meals for better UX
+      const startDate = new Date();
+      const meals = [];
+
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        const dateStr = date.toISOString().split("T")[0];
+
+        meals.push({
+          ...MEAL_FORM_DEFAULTS,
+          date: dateStr,
+          type: "BREAKFAST",
+          name: "",
+        });
+        meals.push({
+          ...MEAL_FORM_DEFAULTS,
+          date: dateStr,
+          type: "LUNCH",
+          name: "",
+        });
+        meals.push({
+          ...MEAL_FORM_DEFAULTS,
+          date: dateStr,
+          type: "DINNER",
+          name: "",
+        });
+      }
+
+      form.reset({
+        ...MEAL_PLAN_FORM_DEFAULTS,
+        startDate: startDate.toISOString().split("T")[0],
+        endDate: new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0],
+        meals,
+      });
     }
   }, [editingPlan, form]);
 
@@ -66,24 +108,27 @@ export function useMealPlanForm() {
   };
 
   const onClose = () => {
-    dispatch(setAddMealPlanModalOpen(false));
+    dispatch(setMealPlanEditorOpen(false));
     form.reset();
   };
 
-  const addMeal = () => {
-    const currentMeals = form.getValues("meals") || [];
-    let nextDate = form.getValues("startDate");
-
-    if (currentMeals.length > 0) {
-      const lastDate = new Date(currentMeals[currentMeals.length - 1].date);
-      lastDate.setDate(lastDate.getDate() + 1);
-      nextDate = lastDate.toISOString().split("T")[0];
-    }
-
+  const addMeal = (date?: string) => {
+    const targetDate = date || form.getValues("startDate");
     append({
       ...MEAL_FORM_DEFAULTS,
-      date: nextDate,
+      date: targetDate,
     });
+  };
+
+  const removeDay = (date: string) => {
+    const meals = form.getValues("meals") || [];
+    const indicesToRemove = meals
+      .map((m: any, i: number) => (m.date === date ? i : -1))
+      .filter((i: number) => i !== -1)
+      .sort((a: number, b: number) => b - a); // Remove from end to start to maintain indices
+
+    indicesToRemove.forEach((i: number) => remove(i));
+    toast.success(`All meals for ${format(new Date(date), "EEEE")} removed`);
   };
 
   const duplicateMeal = (index: number) => {
@@ -98,14 +143,32 @@ export function useMealPlanForm() {
     toast.success("Meal duplicated to next day");
   };
 
+  const getGroupedMeals = () => {
+    const groups: { [date: string]: number[] } = {};
+    fields.forEach((field: any, index: number) => {
+      const date = form.watch(`meals.${index}.date`) || "No Date";
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(index);
+    });
+
+    return Object.keys(groups)
+      .sort()
+      .map((date) => ({
+        date,
+        indices: groups[date],
+      }));
+  };
+
   return {
     form,
     fields,
+    groupedMeals: getGroupedMeals(),
     addMeal,
     duplicateMeal,
+    removeDay,
     removeMeal: remove,
     onSubmit: form.handleSubmit(onSubmit),
-    isOpen: isAddMealPlanModalOpen,
+    isOpen: isMealPlanEditorOpen,
     onClose,
     isEditMode: !!editingMealPlanId,
     isLoading: createMealPlan.isPending || updateMealPlan.isPending,

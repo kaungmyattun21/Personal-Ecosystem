@@ -4,9 +4,10 @@ import React from "react";
 import * as RHF from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus, Save, Trash2, Utensils, Beaker, Copy } from "lucide-react";
+import { Loader2, Plus, Save, Trash2, Utensils, Beaker, Copy, Calendar } from "lucide-react";
 import { FormField } from "@/components/ui/form-field";
 import { AppSelect } from "@/components/ui/app-select";
+import { format } from "date-fns";
 import { INGREDIENT_DEFAULTS } from "../mealPlanSchema";
 
 const FormProvider = (RHF as any).FormProvider;
@@ -16,6 +17,7 @@ const Controller = (RHF as any).Controller;
 interface MealPlanFormViewProps {
   form: any;
   fields: any[];
+  groupedMeals: Array<{ date: string; indices: number[] }>;
   addMeal: () => void;
   duplicateMeal: (index: number) => void;
   removeMeal: (index: number) => void;
@@ -28,6 +30,7 @@ interface MealPlanFormViewProps {
 export function MealPlanFormView({
   form,
   fields,
+  groupedMeals,
   addMeal,
   duplicateMeal,
   removeMeal,
@@ -78,41 +81,67 @@ export function MealPlanFormView({
         </FormField>
 
         {/* Meals Section */}
-        <div className="space-y-6">
+        <div className="space-y-10">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-black uppercase tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-              <Utensils size={20} className="text-brand-teal" />
-              Meals In Plan
+            <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
+              <Utensils size={24} className="text-brand-teal" />
+              Plan Schedule
             </h3>
             <Button
               type="button"
               onClick={addMeal}
               variant="outline"
-              className="h-10 rounded-xl border-2 border-brand-teal/20 text-brand-teal font-black uppercase tracking-widest hover:bg-brand-teal/5 gap-2"
+              className="h-12 rounded-xl border-2 border-brand-teal/20 text-brand-teal font-black uppercase tracking-widest hover:bg-brand-teal/5 gap-2 px-6"
             >
-              <Plus size={16} strokeWidth={2.5} />
+              <Plus size={18} strokeWidth={2.5} />
               Add Meal
             </Button>
           </div>
 
-          <div className="space-y-8">
-            {fields.map((field, index) => (
-              <MealItemRow
-                key={field.id}
-                index={index}
-                register={register}
-                control={control}
-                removeMeal={removeMeal}
-                duplicateMeal={duplicateMeal}
-                groceries={groceries}
-              />
-            ))}
-
-            {fields.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-12 rounded-3xl bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-200 dark:border-white/10">
+          <div className="space-y-12">
+            {groupedMeals.length > 0 ? (
+              groupedMeals.map(({ date, indices }) => (
+                <div key={date} className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-px flex-1 bg-slate-200 dark:bg-white/10" />
+                    <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                      <Calendar size={14} className="text-brand-teal" />
+                      <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-zinc-400">
+                        {date !== "No Date" ? format(new Date(date), "EEEE, MMM d") : "No Date Set"}
+                      </span>
+                    </div>
+                    <div className="h-px flex-1 bg-slate-200 dark:bg-white/10" />
+                  </div>
+                  <div className="space-y-6">
+                    {indices.map((index) => (
+                      <MealItemRow
+                        key={fields[index].id}
+                        index={index}
+                        register={register}
+                        control={control}
+                        removeMeal={removeMeal}
+                        duplicateMeal={duplicateMeal}
+                        groceries={groceries}
+                        form={form}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 rounded-[40px] bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-200 dark:border-white/10">
+                <Utensils size={48} className="text-slate-200 dark:text-white/10 mb-4" />
                 <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">
-                  No meals added yet
+                  No meals scheduled yet
                 </p>
+                <Button 
+                  type="button" 
+                  variant="link" 
+                  className="text-brand-teal mt-2"
+                  onClick={addMeal}
+                >
+                  Add your first meal
+                </Button>
               </div>
             )}
           </div>

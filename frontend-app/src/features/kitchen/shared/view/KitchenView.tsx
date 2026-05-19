@@ -14,7 +14,6 @@ import { KitchenOverview } from "@/features/kitchen/overview/view/KitchenOvervie
 import { KitchenHeader } from "@/features/kitchen/shared/components/KitchenHeader";
 import { AddGroceryForm } from "@/features/kitchen/groceries/components/AddGroceryForm";
 import { AddShoppingListForm } from "@/features/kitchen/shopping-list/components/AddShoppingListForm";
-import { AddMealPlanForm } from "@/features/kitchen/meal-plan/components/AddMealPlanForm";
 import { BulkAddGroceryForm } from "@/features/kitchen/groceries/components/BulkAddGroceryForm";
 
 export function KitchenView() {
@@ -84,7 +83,6 @@ export function KitchenView() {
       <AddGroceryForm />
       <BulkAddGroceryForm />
       <AddShoppingListForm />
-      <AddMealPlanForm />
     </div>
   );
 }
