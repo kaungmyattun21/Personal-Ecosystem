@@ -1,127 +1,80 @@
 "use client";
 
 import React from "react";
-import { Wallet, ArrowUpRight, Plus, TrendingUp } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { Plus, TrendingUp, Search, Bell, Settings } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/store/store";
 import {
   setAddTransactionModalOpen,
   setAddBudgetModalOpen,
 } from "@/lib/store/features/finance/finance-slice";
-import { useAccounts } from "@/features/finance/shared/hooks/useAccounts";
-import { useSavingGoals } from "@/features/finance/goals/hooks/useSavingGoals";
-import { Card } from "@/components/ui/card";
 
 export function FinanceHeader() {
   const dispatch = useDispatch();
-  const { accounts } = useAccounts();
-  const { savingGoals } = useSavingGoals();
+  const activeTab = useSelector((state: RootState) => state.finance.activeTab);
 
-  const actualBalance =
-    accounts.data?.reduce((acc, curr) => acc + parseFloat(curr.balance), 0) ||
-    0;
-
-  const saving =
-    savingGoals.data?.reduce(
-      (acc, curr) => acc + parseFloat(curr.currentAmount),
-      0,
-    ) || 0;
-
-  const totalWealth = actualBalance;
-  const spendable = Math.max(0, actualBalance - saving);
+  const tabMeta = {
+    overview: { label: "Overview", title: "Financial Pulse" },
+    transactions: { label: "Activity", title: "Portfolio Activity" },
+    budgets: { label: "Budgets", title: "Active Budgets" },
+    bills: { label: "Bills", title: "Bill Scheduler" },
+    goals: { label: "Goals", title: "Saving Goals" },
+  }[activeTab || "overview"];
 
   return (
-    <div className="flex flex-col lg:flex-row items-start justify-between gap-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl lg:text-5xl font-black tracking-tighter text-brand-teal dark:text-white uppercase italic leading-none">
-          Financial <span className="text-brand-emerald">Pulse</span>
+    <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-2 border-none">
+      {/* Editorial Title & Label */}
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[10px] font-bold font-sans uppercase tracking-[0.25em] text-[#006b54] dark:text-[#74f6ce]">
+          {tabMeta.label}
+        </span>
+        <h1 className="text-3xl lg:text-4xl font-extrabold font-display tracking-tight text-[#042727] dark:text-white leading-none">
+          {tabMeta.title}
         </h1>
-        <p className="text-[10px] lg:text-[11px] font-black uppercase tracking-[0.3em] text-brand-teal/70 dark:text-zinc-400 max-w-md leading-relaxed">
-          Orchestrate your wealth through granular tracking and high-velocity
-          budgeting logic.
-        </p>
+      </div>
 
-        <div className="flex flex-wrap items-center gap-2 mt-6">
-          <button
-            onClick={() => dispatch(setAddTransactionModalOpen(true))}
-            className="group flex items-center gap-3 bg-brand-teal text-white px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider shadow-xl shadow-brand-teal/20 hover:scale-105 active:scale-95 transition-all"
-          >
-            <Plus size={16} strokeWidth={3} />
-            Add Transaction
+      {/* Header Actions & Controls */}
+      <div className="flex items-center flex-wrap gap-4 w-full md:w-auto justify-end">
+        {/* Search Input Box */}
+        <div className="relative hidden lg:block w-72">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 h-4 w-4" />
+          <input
+            type="text"
+            placeholder="Search portfolios, assets, or markets..."
+            className="w-full bg-[#f2f4f5] dark:bg-white/5 border-none rounded-full py-2.5 pl-10 pr-4 text-xs text-[#191c1d] dark:text-white placeholder-zinc-450 focus:outline-none focus:ring-1 focus:ring-[#042727] transition-all"
+          />
+        </div>
+
+        {/* Small Utility Icons */}
+        <div className="hidden sm:flex items-center gap-3">
+          <button className="p-2.5 rounded-full hover:bg-[#f2f4f5] dark:hover:bg-white/5 text-[#042727] dark:text-white transition-colors cursor-pointer relative">
+            <Bell size={18} />
+            <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-[#76001b]" />
           </button>
+          <button className="p-2.5 rounded-full hover:bg-[#f2f4f5] dark:hover:bg-white/5 text-[#042727] dark:text-white transition-colors cursor-pointer">
+            <Settings size={18} />
+          </button>
+        </div>
+
+        {/* CTA Pills */}
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
           <button
             onClick={() => dispatch(setAddBudgetModalOpen(true))}
-            className="flex items-center gap-3 bg-white dark:bg-white/5 border border-black/[0.05] dark:border-white/10 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider hover:bg-slate-50 dark:hover:bg-white/10 active:scale-95 transition-all"
+            className="flex items-center justify-center gap-2 bg-[#f2f4f5] dark:bg-white/5 text-[#191c1d] dark:text-zinc-200 px-5 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-zinc-200 dark:hover:bg-white/10 active:scale-[0.98] transition-all cursor-pointer"
           >
-            <TrendingUp
-              size={16}
-              className="text-brand-emerald"
-              strokeWidth={2.5}
-            />
-            New Budget
+            <TrendingUp size={14} className="text-[#006b54]" strokeWidth={2.5} />
+            <span>New Budget</span>
+          </button>
+          
+          <button
+            onClick={() => dispatch(setAddTransactionModalOpen(true))}
+            className="flex items-center justify-center gap-2 bg-gradient-to-br from-[#042727] to-[#1d3d3d] hover:to-[#042727] text-white px-5 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-[0_8px_20px_rgba(4,39,39,0.15)] active:scale-[0.98] transition-all cursor-pointer"
+          >
+            <Plus size={14} strokeWidth={3} />
+            <span>Add Transaction</span>
           </button>
         </div>
       </div>
-
-      {/* Premium Balance Card - Dashboard Style */}
-      <Card className="w-full lg:w-[480px] p-8 min-h-[220px] flex flex-col justify-between overflow-hidden group">
-        {/* <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-bl-[100px] -z-10 pointer-events-none" /> */}
-
-        <div className="relative z-10 flex flex-col h-full justify-between gap-8">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-teal/60 dark:text-zinc-400 mb-1">
-                Net Liquid Wealth
-              </p>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-[32px] font-black tracking-tighter text-brand-teal dark:text-white leading-none">
-                  $
-                  {actualBalance.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </span>
-                <span className="text-[10px] font-black text-brand-teal/50 dark:text-zinc-500 uppercase">
-                  USD
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-2">
-              <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                <Wallet className="text-primary h-6 w-6" strokeWidth={2} />
-              </div>
-              <div className="flex items-center gap-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-3 py-1 border border-emerald-200 dark:border-emerald-800">
-                <div className="h-1.5 w-1.5 rounded-full bg-brand-emerald animate-pulse" />
-                <span className="text-[8px] font-bold text-brand-emerald uppercase tracking-tighter">
-                  Live
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 border-t border-black/[0.03] dark:border-white/[0.05] pt-6">
-            <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-black uppercase tracking-widest text-brand-teal/60 dark:text-zinc-400">
-                Total Saving
-              </span>
-              <span className="text-xl font-bold tracking-tight text-brand-emerald">
-                $
-                {saving.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-black uppercase tracking-widest text-brand-teal/60 dark:text-zinc-400">
-                Spendable
-              </span>
-              <span className="text-xl font-bold tracking-tight text-foreground/90">
-                $
-                {spendable.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-          </div>
-        </div>
-      </Card>
     </div>
   );
 }

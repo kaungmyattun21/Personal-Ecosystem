@@ -109,20 +109,20 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
   }
 
   return (
-    <Card className="h-full p-8 flex flex-col gap-8">
+    <Card className="h-full p-8 flex flex-col border-none bg-white dark:bg-zinc-900/50 shadow-[0_12px_32px_-4px_rgba(4,39,39,0.04)] rounded-[24px] gap-8">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-black uppercase italic tracking-tighter text-brand-teal dark:text-white">
-            Upcoming Bills
+          <h3 className="text-base font-extrabold font-display uppercase tracking-tighter text-[#042727] dark:text-white">
+            Upcoming Commitments
           </h3>
-          <p className="text-[9px] font-bold uppercase tracking-widest text-brand-teal-light dark:text-zinc-500 mt-1">
-            Recurring commitments
+          <p className="text-[9px] font-bold uppercase tracking-widest text-[#042727]/60 dark:text-zinc-500 mt-1">
+            Recurring Bills & Schedules
           </p>
         </div>
         <Button
           variant="ghost"
           onClick={() => dispatch(setActiveTab("bills"))}
-          className="text-[10px] font-black uppercase tracking-widest text-brand-teal/40 hover:text-brand-emerald transition-colors p-0 h-auto"
+          className="text-[9px] font-black uppercase tracking-widest text-[#042727]/45 hover:text-[#006b54] transition-colors p-0 h-auto hover:bg-transparent"
         >
           See All
         </Button>
@@ -137,28 +137,28 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
             return (
               <div
                 key={bill.id}
-                className="group flex items-center justify-between py-4 border-b border-black/[0.02] dark:border-white/[0.02] last:border-none"
+                className="group flex items-center justify-between py-4 border-b border-zinc-100 dark:border-white/5 last:border-none"
               >
                 <div className="flex items-center gap-5">
                   <div
                     className={cn(
                       "flex h-11 w-11 items-center justify-center rounded-2xl transition-transform group-hover:scale-105 shadow-inner",
                       status.color === "emerald" &&
-                        "bg-brand-emerald/10 text-brand-emerald",
-                      status.color === "rose" && "bg-rose-500/10 text-rose-500",
+                        "bg-[#006b54]/10 text-[#006b54]",
+                      status.color === "rose" && "bg-[#76001b]/10 text-[#76001b]",
                       status.color === "amber" &&
-                        "bg-amber-500/10 text-amber-500",
+                        "bg-[#d39a3e]/10 text-[#d39a3e]",
                       status.color === "slate" &&
-                        "bg-brand-teal/10 text-brand-teal",
+                        "bg-[#042727]/10 text-[#042727] dark:bg-white/5 dark:text-white",
                     )}
                   >
                     <StatusIcon className="h-5 w-5" strokeWidth={2.5} />
                   </div>
                   <div>
-                    <p className="text-[13px] font-black uppercase italic tracking-tighter text-brand-teal dark:text-white leading-none mb-1">
+                    <p className="text-[13px] font-black uppercase tracking-tighter text-[#042727] dark:text-white leading-none mb-1">
                       {bill.name}
                     </p>
-                    <p className="text-[8.5px] font-bold uppercase tracking-widest text-brand-teal-light/60">
+                    <p className="text-[8.5px] font-bold uppercase tracking-widest text-[#042727]/40 dark:text-zinc-550">
                       Due: {format(new Date(bill.dueDate), "MMM dd")} &bull; $
                       {parseFloat(bill.amount).toFixed(2)}
                     </p>
@@ -170,12 +170,12 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
                     className={cn(
                       "px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest italic",
                       status.color === "emerald" &&
-                        "bg-brand-emerald/10 text-brand-emerald",
-                      status.color === "rose" && "bg-rose-500/10 text-rose-500",
+                        "bg-[#006b54]/10 text-[#006b54]",
+                      status.color === "rose" && "bg-[#76001b]/10 text-[#76001b]",
                       status.color === "amber" &&
-                        "bg-amber-500/10 text-amber-500",
+                        "bg-[#d39a3e]/10 text-[#d39a3e]",
                       status.color === "slate" &&
-                        "bg-brand-teal/10 text-brand-teal",
+                        "bg-[#042727]/10 text-[#042727] dark:bg-white/5 dark:text-white",
                     )}
                   >
                     {status.label}
@@ -188,7 +188,7 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
                       className="h-10 w-10 p-0 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5"
                       title="Edit Bill"
                     >
-                      <Pencil className="h-4 w-4 text-brand-teal/40 dark:text-white/40" />
+                      <Pencil className="h-4 w-4 text-[#042727]/40 dark:text-white/40" />
                     </Button>
                     
                     <Button
@@ -196,7 +196,7 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
                       variant="ghost"
                       className={cn(
                         "h-10 w-10 p-0 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5",
-                        bill.status === "PAID" ? "text-brand-emerald" : "text-brand-teal/40 dark:text-white/40"
+                        bill.status === "PAID" ? "text-[#006b54]" : "text-[#042727]/40 dark:text-white/40"
                       )}
                       title={bill.status === "PAID" ? "Mark as Unpaid" : "Mark as Paid"}
                     >
@@ -217,7 +217,7 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
       {!limit && (
         <Button
           onClick={() => dispatch(setAddBillModalOpen(true))}
-          className="w-full bg-brand-teal dark:bg-brand-emerald text-white hover:opacity-90 rounded-[20px] h-12 text-[11px] font-black uppercase italic tracking-widest shadow-lg transition-all active:scale-95"
+          className="w-full bg-[#042727] hover:bg-[#006b54] text-white rounded-full h-12 text-[10px] font-black uppercase tracking-widest shadow-none transition-all active:scale-95 border-none"
         >
           Add New Recurring Bill
         </Button>

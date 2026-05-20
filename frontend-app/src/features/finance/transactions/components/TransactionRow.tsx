@@ -14,19 +14,19 @@ import { Transaction } from "@/types/finance";
 const TYPE_CONFIG = {
   INCOME: {
     icon: ArrowDownLeft,
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
-    badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+    color: "text-[#006b54] dark:text-emerald-400",
+    bg: "bg-[#006b54]/10",
+    badge: "bg-[#006b54]/10 text-[#006b54] dark:text-emerald-400",
     sign: "+",
-    amountColor: "text-emerald-700 dark:text-emerald-400",
+    amountColor: "text-[#006b54] dark:text-emerald-400",
   },
   EXPENSE: {
     icon: ArrowUpRight,
-    color: "text-rose-500",
-    bg: "bg-rose-500/10",
-    badge: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
+    color: "text-[#76001b] dark:text-rose-400",
+    bg: "bg-[#76001b]/10",
+    badge: "bg-[#76001b]/10 text-[#76001b] dark:text-rose-400",
     sign: "-",
-    amountColor: "text-rose-600 dark:text-rose-400",
+    amountColor: "text-[#76001b] dark:text-rose-400",
   },
   TRANSFER: {
     icon: ArrowLeftRight,
@@ -61,8 +61,7 @@ export function TransactionRow({
   return (
     <tr
       className={cn(
-        "group transition-colors hover:bg-brand-teal/[0.02] dark:hover:bg-white/[0.02]",
-        !isLast && "border-b border-black/[0.03] dark:border-white/[0.03]",
+        "group transition-colors hover:bg-[#f2f4f5] dark:hover:bg-white/[0.02]",
         isSelected && "bg-brand-teal/[0.04] dark:bg-white/[0.04]"
       )}
     >

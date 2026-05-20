@@ -1,6 +1,11 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import type { UserConfig as ViteUserConfig } from 'vite';
+
+interface VitestUserConfig extends ViteUserConfig {
+  test?: any;
+}
 
 export default defineConfig({
   plugins: [react()],
@@ -18,4 +23,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-});
+} as VitestUserConfig);
