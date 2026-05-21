@@ -31,7 +31,7 @@ export function BulkAddGroceryForm() {
               <div className="h-6 w-6 rounded-lg bg-brand-teal" />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight italic">
+              <DialogTitle className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
                 Batch Grocery Entry
               </DialogTitle>
               <p className="text-sm font-medium text-slate-500 dark:text-zinc-400">

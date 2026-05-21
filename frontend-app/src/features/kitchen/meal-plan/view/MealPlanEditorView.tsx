@@ -81,7 +81,7 @@ export function MealPlanEditorView() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div className="flex-1 max-w-md">
-                <h1 className="text-xl font-black uppercase tracking-tight italic text-slate-900 dark:text-white">
+                <h1 className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white">
                   {isEditMode ? "Editing Meal Plan" : "Create New Plan"}
                 </h1>
                 <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
@@ -154,7 +154,7 @@ export function MealPlanEditorView() {
                     : "No Date"}
                 </p>
                 <h3
-                  className={`text-lg font-black italic tracking-tight ${activeDayIndex === idx ? "text-white" : "text-slate-900 dark:text-white"}`}
+                  className={`text-lg font-black tracking-tight ${activeDayIndex === idx ? "text-white" : "text-slate-900 dark:text-white"}`}
                 >
                   {group.date !== "No Date"
                     ? format(new Date(group.date), "MMM d")
@@ -259,7 +259,7 @@ function MealEditorCard({
               <p className="text-[10px] font-black uppercase tracking-widest text-brand-teal/70">
                 Meal Configuration
               </p>
-              <h4 className="text-lg font-black text-slate-900 dark:text-white uppercase italic">
+              <h4 className="text-lg font-black text-slate-900 dark:text-white uppercase">
                 Meal #{index + 1}
               </h4>
             </div>

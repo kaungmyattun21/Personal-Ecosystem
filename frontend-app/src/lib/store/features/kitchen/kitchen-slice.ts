@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface KitchenUIState {
-  activeTab: "overview" | "groceries" | "shopping-list" | "meal-plan";
+  activeTab: "overview" | "groceries" | "shopping-list" | "meal-plan" | "recipes";
   isAddGroceryModalOpen: boolean;
   isBulkAddGroceryModalOpen: boolean;
   isAddShoppingListModalOpen: boolean;

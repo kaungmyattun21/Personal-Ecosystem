@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GroceriesView } from "@/features/kitchen/groceries/view/GroceriesView";
 import { ShoppingListView } from "@/features/kitchen/shopping-list/view/ShoppingListView";
 import { MealPlanView } from "@/features/kitchen/meal-plan/view/MealPlanView";
-import { ShoppingCart, Utensils, Package, LayoutDashboard } from "lucide-react";
+import { RecipesView } from "@/features/kitchen/recipes/view/RecipesView";
+import { ShoppingCart, Utensils, Package, LayoutDashboard, Sparkles } from "lucide-react";
 import { Suspense } from "react";
 import { Card } from "@/components/ui/card";
 import { KitchenOverview } from "@/features/kitchen/overview/view/KitchenOverview";
@@ -27,7 +28,7 @@ export function KitchenView() {
       <Tabs
         value={activeTab}
         onValueChange={(value) =>
-          dispatch(setActiveTab(value as "overview" | "groceries" | "shopping-list" | "meal-plan"))
+          dispatch(setActiveTab(value as "overview" | "groceries" | "shopping-list" | "meal-plan" | "recipes"))
         }
         className="w-full space-y-8"
       >
@@ -61,6 +62,13 @@ export function KitchenView() {
               <Utensils size={16} strokeWidth={2.5} />
               <span className="hidden sm:inline">Meal Plan</span>
             </TabsTrigger>
+            <TabsTrigger
+              value="recipes"
+              className="px-6 rounded-xl data-[state=active]:bg-brand-teal data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-brand-teal/20 transition-all text-xs font-black uppercase tracking-widest gap-2 h-full"
+            >
+              <Sparkles size={16} strokeWidth={2.5} />
+              <span className="hidden sm:inline">Recipes</span>
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -77,7 +85,11 @@ export function KitchenView() {
           <TabsContent value="meal-plan" className="space-y-4 outline-none">
             <MealPlanView />
           </TabsContent>
+          <TabsContent value="recipes" className="space-y-4 outline-none">
+            <RecipesView />
+          </TabsContent>
         </Suspense>
+
       </Tabs>
 
       <AddGroceryForm />
