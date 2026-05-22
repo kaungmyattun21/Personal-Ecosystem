@@ -73,12 +73,12 @@ export function ActivityPulse({ isLoading, getChartData }: ActivityPulseProps) {
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#006b54" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#006b54" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#76001b" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#76001b" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="6 6" vertical={false} strokeOpacity={0.03} />
@@ -92,7 +92,7 @@ export function ActivityPulse({ isLoading, getChartData }: ActivityPulseProps) {
               <YAxis hide />
               <Tooltip
                 cursor={{
-                  stroke: "#006b54",
+                  stroke: "#10b981",
                   strokeWidth: 1,
                   strokeDasharray: "4 4",
                 }}
@@ -114,7 +114,7 @@ export function ActivityPulse({ isLoading, getChartData }: ActivityPulseProps) {
                 type="monotone"
                 dataKey="income"
                 name="Income"
-                stroke="#006b54"
+                stroke="#10b981"
                 strokeWidth={3}
                 fillOpacity={1}
                 fill="url(#colorIncome)"
@@ -123,7 +123,7 @@ export function ActivityPulse({ isLoading, getChartData }: ActivityPulseProps) {
                 type="monotone"
                 dataKey="expense"
                 name="Expense"
-                stroke="#76001b"
+                stroke="#ef4444"
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 fillOpacity={1}

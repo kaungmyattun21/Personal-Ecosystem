@@ -41,7 +41,7 @@ export function AppSelect({
     <Select value={value || "none"} onValueChange={(val) => onValueChange(val === "none" ? "" : val)}>
       <SelectTrigger
         className={cn(
-          "h-12 rounded-xl border-none bg-slate-50 dark:bg-white/5 px-4 text-xs font-bold transition-all hover:bg-slate-100 dark:hover:bg-white/10",
+          "w-full border-none bg-slate-50 dark:bg-white/5 px-4 text-xs font-bold transition-all hover:bg-slate-100 dark:hover:bg-white/10",
           triggerClassName
         )}
       >

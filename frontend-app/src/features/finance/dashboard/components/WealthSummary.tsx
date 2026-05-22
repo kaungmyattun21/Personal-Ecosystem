@@ -32,7 +32,7 @@ export function WealthSummary({
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Total Wealth Card */}
       <Card className="relative overflow-hidden p-10 flex flex-col justify-between group min-h-[260px] bg-gradient-to-br from-[#042727] to-[#1d3d3d] border-none shadow-[0_12px_32px_-4px_rgba(4,39,39,0.08)] dark:shadow-none transition-all hover:scale-[1.01] rounded-[24px]">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#006b54]/20 via-transparent to-[#042727]/10 opacity-60 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#10b981]/20 via-transparent to-[#042727]/10 opacity-60 pointer-events-none" />
         <div className="relative z-10 flex flex-col h-full justify-between">
           <div>
             <span className="text-[8.5px] font-black uppercase tracking-[0.3em] text-white/70 mb-2 block">
@@ -60,7 +60,7 @@ export function WealthSummary({
               {netGain >= 0 ? (
                 <TrendingUp size={16} className="text-[#74f6ce]" strokeWidth={3} />
               ) : (
-                <TrendingDown size={16} className="text-rose-400" strokeWidth={3} />
+                <TrendingDown size={16} className="text-red-400" strokeWidth={3} />
               )}
               <span className="text-[11px] font-black tracking-wide">
                 {netGain >= 0 ? "+" : ""}$
@@ -78,7 +78,7 @@ export function WealthSummary({
       {/* This Month Summary Card */}
       <Card className="flex flex-col justify-between p-8 min-h-[260px] group border-none bg-white dark:bg-zinc-900/50 shadow-[0_12px_32px_-4px_rgba(4,39,39,0.04)] rounded-[24px] transition-transform hover:scale-[1.01]">
         <div className="flex items-start justify-between mb-4">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#006b54]/10 text-[#006b54] border border-[#006b54]/5 shadow-inner">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/5 shadow-inner">
             <Activity size={20} strokeWidth={2.5} />
           </div>
           <span className="text-[8px] font-black uppercase tracking-[0.25em] text-[#042727]/60 dark:text-white/60 mt-2">
@@ -99,7 +99,7 @@ export function WealthSummary({
             {isLoading ? (
               <Skeleton className="h-6 w-20" />
             ) : (
-              <span className="text-[15px] font-black text-[#006b54] tabular-nums">
+              <span className="text-[15px] font-black text-[#10b981] tabular-nums">
                 +${currentMonthIncome.toLocaleString(undefined, { maximumFractionDigits: 2 })}
               </span>
             )}

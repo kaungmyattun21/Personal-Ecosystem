@@ -64,12 +64,12 @@ export function RecentActivity({ isLoading, transactions }: RecentActivityProps)
                 const isIncome = tx.type === "INCOME";
                 const isTransfer = tx.type === "TRANSFER";
                 const iconColor = isIncome
-                  ? "bg-[#006b54]/10 text-[#006b54]"
+                  ? "bg-[#10b981]/10 text-[#10b981]"
                   : isTransfer
                   ? "bg-[#d39a3e]/10 text-[#d39a3e]"
-                  : "bg-[#76001b]/10 text-[#76001b]";
+                  : "bg-[#ef4444]/10 text-[#ef4444]";
                 const amountColor = isIncome
-                  ? "text-[#006b54]"
+                  ? "text-[#10b981]"
                   : isTransfer
                   ? "text-[#d39a3e]"
                   : "text-[#042727] dark:text-white";
@@ -120,7 +120,7 @@ export function RecentActivity({ isLoading, transactions }: RecentActivityProps)
       </div>
 
       <div className="p-6 bg-black/[0.01] dark:bg-white/[0.01] text-center border-t border-zinc-100 dark:border-white/5">
-        <button className="text-[10px] font-black uppercase tracking-[0.2em] text-[#042727]/45 hover:text-[#006b54] transition-colors bg-transparent border-none cursor-pointer">
+        <button className="text-[10px] font-black uppercase tracking-[0.2em] text-[#042727]/45 hover:text-[#10b981] transition-colors bg-transparent border-none cursor-pointer">
           View All Transactions
         </button>
       </div>

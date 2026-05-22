@@ -36,10 +36,10 @@ const SidebarSkeleton = ({ className, height }: { className?: string; height: st
  */
 const AccountsListCard = memo(({ isLoading, accounts }: { isLoading: boolean; accounts: Account[] }) => (
   <Card className="relative overflow-hidden p-8 flex flex-col justify-between min-h-[320px] bg-white dark:bg-zinc-900/50 border-none shadow-[0_12px_32px_-4px_rgba(4,39,39,0.04)] rounded-[24px] transition-all hover:scale-[1.01]">
-    <div className="absolute inset-0 bg-gradient-to-tr from-[#006b54]/[0.02] to-transparent pointer-events-none" />
+    <div className="absolute inset-0 bg-gradient-to-tr from-[#10b981]/[0.02] to-transparent pointer-events-none" />
     <div className="relative z-10">
       <div className="flex items-center justify-between mb-8">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#006b54]/10 text-[#006b54] border border-[#006b54]/5 shadow-inner">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/5 shadow-inner">
           <Wallet size={24} strokeWidth={2} />
         </div>
         <span className="text-[8.5px] font-black uppercase tracking-[0.25em] text-[#042727]/50 dark:text-white/40">
@@ -82,7 +82,7 @@ const AccountsListCard = memo(({ isLoading, accounts }: { isLoading: boolean; ac
       )}
     </div>
     
-    <Wallet className="absolute -right-12 -top-12 text-[#006b54]/[0.02] dark:text-white/[0.01] w-64 h-64 pointer-events-none rotate-45" strokeWidth={0.5} />
+    <Wallet className="absolute -right-12 -top-12 text-[#10b981]/[0.02] dark:text-white/[0.01] w-64 h-64 pointer-events-none rotate-45" strokeWidth={0.5} />
   </Card>
 ));
 AccountsListCard.displayName = "AccountsListCard";
@@ -112,7 +112,7 @@ const BalanceRatioCard = memo(({ isLoading, income, expense }: { isLoading: bool
             {income > 0 ? `${ratio}%` : "0%"}
           </h3>
           <p className="mt-2 text-[8px] font-black uppercase tracking-[0.2em] text-[#042727]/50 dark:text-zinc-500">
-            Spend Ratio • <span className="text-[#006b54] font-black">Monthly</span>
+            Spend Ratio • <span className="text-[#10b981] font-black">Monthly</span>
           </p>
         </div>
       )}
@@ -140,10 +140,10 @@ const LowPriorityTip = memo(({ isLoading, netGain }: { isLoading: boolean; netGa
   return (
     <Card className="p-8 border-none bg-white dark:bg-zinc-900/50 shadow-[0_12px_32px_-4px_rgba(4,39,39,0.04)] rounded-[24px] backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center gap-4 mb-5">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#006b54] text-white shadow-none">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#10b981] text-white shadow-none">
           <Activity size={24} strokeWidth={2.5} />
         </div>
-        <h4 className="text-[9px] font-black uppercase tracking-widest text-[#006b54]">
+        <h4 className="text-[9px] font-black uppercase tracking-widest text-[#10b981]">
           Budget AI Tip
         </h4>
       </div>

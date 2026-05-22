@@ -21,11 +21,14 @@ export function AddTransactionForm() {
 
   return (
     <Dialog open={ctrl.isOpen} onOpenChange={ctrl.onClose}>
-      <DialogContent className="max-w-md rounded-[40px] border border-brand-emerald/20 dark:border-brand-emerald/40 bg-white/80 dark:bg-brand-bg-dark/80 backdrop-blur-2xl shadow-lg p-0 overflow-hidden max-h-[90vh] flex flex-col">
-        <DialogHeader className="p-10 pb-2 flex flex-row items-center justify-between">
+      <DialogContent className="max-w-260 rounded-[32px] border border-brand-emerald/20 dark:border-brand-emerald/40 bg-white dark:bg-brand-bg-dark shadow-2xl p-0 overflow-hidden max-h-[80vh] flex flex-col">
+        <DialogHeader className="px-10 pt-9 pb-1">
           <DialogTitle className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-            {ctrl.isEditMode ? "Edit Transaction" : "Add Transaction"}
+            {ctrl.isEditMode ? "Edit Transaction" : "Log Transaction"}
           </DialogTitle>
+          <p className="text-sm text-slate-400 dark:text-slate-500 font-medium">
+            Update your records with ease.
+          </p>
         </DialogHeader>
         <TransactionFormView {...ctrl} />
       </DialogContent>

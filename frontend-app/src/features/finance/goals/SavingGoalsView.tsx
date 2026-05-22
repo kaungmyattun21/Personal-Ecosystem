@@ -85,7 +85,7 @@ export function SavingGoalsView() {
               >
                 <div>
                   <div className="flex justify-between items-start relative z-10">
-                    <div className={`p-4 rounded-2xl ${isReached ? 'bg-[#006b54]/10 text-[#006b54]' : 'bg-[#f2f4f5] dark:bg-white/5 text-[#042727] dark:text-zinc-550'} group-hover:bg-[#006b54] group-hover:text-white transition-all duration-500`}>
+                    <div className={`p-4 rounded-2xl ${isReached ? 'bg-[#10b981]/10 text-[#10b981]' : 'bg-[#f2f4f5] dark:bg-white/5 text-[#042727] dark:text-zinc-550'} group-hover:bg-[#10b981] group-hover:text-white transition-all duration-500`}>
                       {isReached ? <CheckCircle2 size={20} strokeWidth={2.5} /> : <Target size={20} strokeWidth={2.5} />}
                     </div>
                     <div className="flex opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -101,7 +101,7 @@ export function SavingGoalsView() {
                         variant="ghost" 
                         size="icon" 
                         onClick={() => handleDeleteGoal(goal.id)}
-                        className="rounded-full hover:bg-rose-50 dark:hover:bg-rose-500/10 h-9 w-9 text-rose-500"
+                        className="rounded-full hover:bg-red-50 dark:hover:bg-red-500/10 h-9 w-9 text-red-500"
                       >
                         <Trash2 size={16} strokeWidth={2} />
                       </Button>
@@ -110,7 +110,7 @@ export function SavingGoalsView() {
 
                   <div className="mt-6 relative z-10 flex justify-between items-start">
                     <div>
-                      <h4 className="text-lg font-extrabold font-display uppercase tracking-tighter text-[#042727] dark:text-white truncate group-hover:text-[#006b54] transition-colors duration-300">
+                      <h4 className="text-lg font-extrabold font-display uppercase tracking-tighter text-[#042727] dark:text-white truncate group-hover:text-[#10b981] transition-colors duration-300">
                         {goal.name}
                       </h4>
                       <div className="flex items-center gap-2 mt-1">
@@ -128,14 +128,14 @@ export function SavingGoalsView() {
 
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 text-slate-400 hover:text-[#006b54]">
+                        <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 text-slate-400 hover:text-[#10b981]">
                           <HistoryIcon size={16} />
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-md rounded-[24px] p-8 border-none bg-white dark:bg-zinc-900 shadow-xl">
                          <DialogHeader>
                            <DialogTitle className="text-xl font-extrabold font-display italic uppercase tracking-tighter text-[#042727] dark:text-white">
-                             Saving <span className="text-[#006b54]">History</span>
+                             Saving <span className="text-[#10b981]">History</span>
                            </DialogTitle>
                          </DialogHeader>
                          <div className="mt-6 space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
@@ -145,7 +145,7 @@ export function SavingGoalsView() {
                              goal.contributions.map((log: any) => (
                                <div key={log.id} className="flex justify-between items-center p-4 rounded-2xl bg-[#f2f4f5] dark:bg-white/5 border-none group/log transition-all">
                                  <div>
-                                   <div className="text-[9px] font-black uppercase tracking-widest text-[#006b54]">{log.source}</div>
+                                   <div className="text-[9px] font-black uppercase tracking-widest text-[#10b981]">{log.source}</div>
                                    <div className="text-xs font-bold text-[#042727] dark:text-white mt-1">{log.description || "Deposit"}</div>
                                    <div className="text-[9px] text-zinc-400 font-medium mt-0.5">{format(new Date(log.date), "MMM d, yyyy • HH:mm")}</div>
                                  </div>
@@ -178,7 +178,7 @@ export function SavingGoalsView() {
 
                     <div className="relative h-2 w-full bg-[#f2f4f5] dark:bg-white/5 rounded-full overflow-hidden">
                       <div 
-                        className="h-full rounded-full bg-[#006b54] transition-all duration-1000 ease-out"
+                        className="h-full rounded-full bg-[#10b981] transition-all duration-1000 ease-out"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
@@ -186,12 +186,12 @@ export function SavingGoalsView() {
                 </div>
 
                 <div className="mt-8 pt-6 border-none flex gap-2 relative z-10">
-                   <div className="px-3 py-1.5 rounded-full bg-[#006b54]/10 text-[#006b54] text-[8px] font-black uppercase tracking-widest flex items-center">
+                   <div className="px-3 py-1.5 rounded-full bg-[#10b981]/10 text-[#10b981] text-[8px] font-black uppercase tracking-widest flex items-center">
                      <TrendingUp className="h-3 w-3 mr-1.5" strokeWidth={3} />
                      Growth: Active
                    </div>
                    {isReached && (
-                     <div className="px-3 py-1.5 rounded-full bg-[#74f6ce]/30 text-[#006b54] text-[8px] font-black uppercase tracking-widest flex items-center">
+                     <div className="px-3 py-1.5 rounded-full bg-[#74f6ce]/30 text-[#10b981] text-[8px] font-black uppercase tracking-widest flex items-center">
                        <CheckCircle2 className="h-3 w-3 mr-1.5" strokeWidth={3} />
                        Complete
                      </div>
@@ -235,14 +235,14 @@ export function SavingGoalsView() {
                       ) : (
                         <Button
                           onClick={() => setContributingId(goal.id)}
-                          className="h-9 rounded-full bg-[#f2f4f5] dark:bg-white/5 text-[#006b54] hover:bg-[#006b54] hover:text-white transition-all text-[8px] font-black uppercase tracking-widest px-4 border-none"
+                          className="h-9 rounded-full bg-[#f2f4f5] dark:bg-white/5 text-[#10b981] hover:bg-[#10b981] hover:text-white transition-all text-[8px] font-black uppercase tracking-widest px-4 border-none"
                         >
                           <HandCoins className="h-3.5 w-3.5 mr-1.5" />
                           Add Cash
                         </Button>
                       )}
 
-                      <div className="flex items-center justify-center h-9 w-9 rounded-full bg-[#f2f4f5] dark:bg-white/5 group-hover:bg-[#006b54] group-hover:text-white transition-all duration-500">
+                      <div className="flex items-center justify-center h-9 w-9 rounded-full bg-[#f2f4f5] dark:bg-white/5 group-hover:bg-[#10b981] group-hover:text-white transition-all duration-500">
                          <ArrowUpRight strokeWidth={3} className="h-4 w-4" />
                       </div>
                    </div>

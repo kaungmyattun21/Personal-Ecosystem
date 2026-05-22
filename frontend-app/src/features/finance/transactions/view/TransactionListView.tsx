@@ -93,12 +93,12 @@ export function TransactionListView({ limit, title }: TransactionListViewProps) 
               <span className="text-[8.5px] font-black uppercase tracking-[0.25em] text-[#042727]/60 dark:text-zinc-500">
                 Filtered Inflow
               </span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#006b54]/10 text-[#006b54]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#10b981]/10 text-[#10b981]">
                 <ArrowDownLeft size={18} strokeWidth={2.5} />
               </div>
             </div>
             <div className="mt-4">
-              <span className="text-[26px] font-black tracking-tighter text-[#006b54] dark:text-emerald-400 font-display leading-none block">
+              <span className="text-[26px] font-black tracking-tighter text-[#10b981] dark:text-emerald-400 font-display leading-none block">
                 +${ctrl.totalInflow.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
               <span className="text-[8px] font-bold uppercase tracking-wider text-[#042727]/40 dark:text-zinc-600 mt-1 block">
@@ -112,12 +112,12 @@ export function TransactionListView({ limit, title }: TransactionListViewProps) 
               <span className="text-[8.5px] font-black uppercase tracking-[0.25em] text-[#042727]/60 dark:text-zinc-500">
                 Filtered Outflow
               </span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#76001b]/10 text-[#76001b]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#ef4444]/10 text-[#ef4444]">
                 <ArrowUpRight size={18} strokeWidth={2.5} />
               </div>
             </div>
             <div className="mt-4">
-              <span className="text-[26px] font-black tracking-tighter text-[#76001b] dark:text-rose-400 font-display leading-none block">
+              <span className="text-[26px] font-black tracking-tighter text-[#ef4444] dark:text-rose-400 font-display leading-none block">
                 -${ctrl.totalOutflow.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
               <span className="text-[8px] font-bold uppercase tracking-wider text-[#042727]/40 dark:text-zinc-600 mt-1 block">
@@ -133,7 +133,7 @@ export function TransactionListView({ limit, title }: TransactionListViewProps) 
               </span>
               <div className={cn(
                 "flex h-9 w-9 items-center justify-center rounded-xl",
-                ctrl.netBalance >= 0 ? "bg-[#006b54]/10 text-[#006b54]" : "bg-[#76001b]/10 text-[#76001b]"
+                ctrl.netBalance >= 0 ? "bg-[#10b981]/10 text-[#10b981]" : "bg-[#ef4444]/10 text-[#ef4444]"
               )}>
                 <Activity size={18} strokeWidth={2.5} />
               </div>
@@ -141,7 +141,7 @@ export function TransactionListView({ limit, title }: TransactionListViewProps) 
             <div className="mt-4">
               <span className={cn(
                 "text-[26px] font-black tracking-tighter font-display leading-none block",
-                ctrl.netBalance >= 0 ? "text-[#006b54] dark:text-emerald-400" : "text-[#76001b] dark:text-rose-400"
+                ctrl.netBalance >= 0 ? "text-[#10b981] dark:text-emerald-400" : "text-[#ef4444] dark:text-rose-400"
               )}>
                 {ctrl.netBalance >= 0 ? "+" : ""}${ctrl.netBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>

@@ -14,19 +14,19 @@ import { Transaction } from "@/types/finance";
 const TYPE_CONFIG = {
   INCOME: {
     icon: ArrowDownLeft,
-    color: "text-[#006b54] dark:text-emerald-400",
-    bg: "bg-[#006b54]/10",
-    badge: "bg-[#006b54]/10 text-[#006b54] dark:text-emerald-400",
+    color: "text-[#10b981] dark:text-emerald-500",
+    bg: "bg-[#10b981]/10",
+    badge: "bg-[#10b981]/10 text-[#10b981] dark:text-emerald-500",
     sign: "+",
-    amountColor: "text-[#006b54] dark:text-emerald-400",
+    amountColor: "text-[#10b981] dark:text-emerald-500",
   },
   EXPENSE: {
     icon: ArrowUpRight,
-    color: "text-[#76001b] dark:text-rose-400",
-    bg: "bg-[#76001b]/10",
-    badge: "bg-[#76001b]/10 text-[#76001b] dark:text-rose-400",
+    color: "text-[#ef4444] dark:text-red-400",
+    bg: "bg-[#ef4444]/10",
+    badge: "bg-[#ef4444]/10 text-[#ef4444] dark:text-red-400",
     sign: "-",
-    amountColor: "text-[#76001b] dark:text-rose-400",
+    amountColor: "text-[#ef4444] dark:text-red-400",
   },
   TRANSFER: {
     icon: ArrowLeftRight,
@@ -119,7 +119,7 @@ export function TransactionRow({
                 <span className="h-1 w-1 rounded-full bg-emerald-500/30" />
               )}
               {tx.type === "INCOME" && (
-                <p className="text-[10px] font-bold text-emerald-700 uppercase italic">
+                <p className="text-[10px] font-bold text-emerald-500 uppercase italic">
                   External
                 </p>
               )}
@@ -187,7 +187,7 @@ export function TransactionRow({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-xl hover:bg-rose-500/10 hover:text-rose-500 text-slate-400 transition-colors"
+            className="h-8 w-8 rounded-xl hover:bg-red-500/10 hover:text-red-500 text-slate-400 transition-colors"
             title="Delete transaction"
             onClick={() => onDelete(tx)}
           >

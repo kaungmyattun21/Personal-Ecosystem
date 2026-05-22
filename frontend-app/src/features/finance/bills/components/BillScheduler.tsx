@@ -102,8 +102,18 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
 
   if (bills.isLoading) {
     return (
-      <Card className="h-[400px] flex items-center justify-center animate-pulse">
-        <p className="text-muted-foreground">Loading bills...</p>
+      <Card className="p-8 flex flex-col gap-6 border-none bg-white dark:bg-zinc-900/50 rounded-[24px]">
+        <div className="h-5 w-32 rounded-full bg-slate-200 dark:bg-white/10 animate-pulse" />
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="flex items-center gap-4 animate-pulse">
+            <div className="h-10 w-10 rounded-xl bg-slate-200 dark:bg-white/10 shrink-0" />
+            <div className="flex-1 space-y-2">
+              <div className="h-3 w-32 rounded-full bg-slate-200 dark:bg-white/10" />
+              <div className="h-2 w-20 rounded-full bg-slate-100 dark:bg-white/5" />
+            </div>
+            <div className="h-4 w-16 rounded-full bg-slate-200 dark:bg-white/10" />
+          </div>
+        ))}
       </Card>
     );
   }
@@ -122,7 +132,7 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
         <Button
           variant="ghost"
           onClick={() => dispatch(setActiveTab("bills"))}
-          className="text-[9px] font-black uppercase tracking-widest text-[#042727]/45 hover:text-[#006b54] transition-colors p-0 h-auto hover:bg-transparent"
+          className="text-[9px] font-black uppercase tracking-widest text-[#042727]/45 hover:text-[#10b981] transition-colors p-0 h-auto hover:bg-transparent"
         >
           See All
         </Button>
@@ -144,8 +154,8 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
                     className={cn(
                       "flex h-11 w-11 items-center justify-center rounded-2xl transition-transform group-hover:scale-105 shadow-inner",
                       status.color === "emerald" &&
-                        "bg-[#006b54]/10 text-[#006b54]",
-                      status.color === "rose" && "bg-[#76001b]/10 text-[#76001b]",
+                        "bg-[#10b981]/10 text-[#10b981]",
+                      status.color === "rose" && "bg-[#ef4444]/10 text-[#ef4444]",
                       status.color === "amber" &&
                         "bg-[#d39a3e]/10 text-[#d39a3e]",
                       status.color === "slate" &&
@@ -170,8 +180,8 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
                     className={cn(
                       "px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest italic",
                       status.color === "emerald" &&
-                        "bg-[#006b54]/10 text-[#006b54]",
-                      status.color === "rose" && "bg-[#76001b]/10 text-[#76001b]",
+                        "bg-[#10b981]/10 text-[#10b981]",
+                      status.color === "rose" && "bg-[#ef4444]/10 text-[#ef4444]",
                       status.color === "amber" &&
                         "bg-[#d39a3e]/10 text-[#d39a3e]",
                       status.color === "slate" &&
@@ -196,7 +206,7 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
                       variant="ghost"
                       className={cn(
                         "h-10 w-10 p-0 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5",
-                        bill.status === "PAID" ? "text-[#006b54]" : "text-[#042727]/40 dark:text-white/40"
+                        bill.status === "PAID" ? "text-[#10b981]" : "text-[#042727]/40 dark:text-white/40"
                       )}
                       title={bill.status === "PAID" ? "Mark as Unpaid" : "Mark as Paid"}
                     >
@@ -217,7 +227,7 @@ export function BillScheduler({ limit }: BillSchedulerProps) {
       {!limit && (
         <Button
           onClick={() => dispatch(setAddBillModalOpen(true))}
-          className="w-full bg-[#042727] hover:bg-[#006b54] text-white rounded-full h-12 text-[10px] font-black uppercase tracking-widest shadow-none transition-all active:scale-95 border-none"
+          className="w-full bg-[#042727] hover:bg-[#10b981] text-white rounded-full h-12 text-[10px] font-black uppercase tracking-widest shadow-none transition-all active:scale-95 border-none"
         >
           Add New Recurring Bill
         </Button>

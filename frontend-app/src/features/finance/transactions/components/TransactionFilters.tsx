@@ -58,14 +58,14 @@ export function TransactionFilters({
     <div className="px-8 py-6 border-none flex flex-col gap-4">
       {selectedCount > 0 && (
         <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 border-none pb-4">
-          <span className="text-[10px] font-black uppercase text-rose-500 mr-2 tabular-nums">
+          <span className="text-[10px] font-black uppercase text-red-500 mr-2 tabular-nums">
             {selectedCount} Selected
           </span>
           <Button
             variant="destructive"
             size="sm"
             onClick={onBulkDelete}
-            className="h-8 rounded-xl px-4 bg-rose-500 hover:bg-rose-600 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-rose-500/20 active:scale-95 transition-all text-white"
+            className="h-8 rounded-xl px-4 bg-red-500 hover:bg-red-600 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 active:scale-95 transition-all text-white"
           >
             Delete Selection
           </Button>

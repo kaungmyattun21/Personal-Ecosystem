@@ -24,7 +24,7 @@ export default function FinanceView() {
   const activeTab = useSelector((state: RootState) => state.finance.activeTab);
 
   return (
-    <div className="flex flex-col gap-8 pb-20 pt-2 lg:pb-10 max-w-7xl mx-auto w-full">
+    <div className="flex flex-col gap-6 pb-20 pt-2 lg:pb-10 max-w-7xl mx-auto w-full">
       <FinanceHeader />
 
       <Tabs
@@ -41,50 +41,37 @@ export default function FinanceView() {
             ),
           )
         }
-        className="w-full space-y-8"
+        className="w-full space-y-6"
       >
-        <div className="flex items-center justify-between">
-          <TabsList className="bg-slate-100/50 dark:bg-white/5 p-1 rounded-2xl h-14 border border-black/[0.02] dark:border-white/[0.02] backdrop-blur-md">
+        <TabsList className="md:hidden flex items-center gap-0 border-b border-[#E8E8E8] dark:border-white/8 w-full bg-transparent p-0 rounded-none h-auto">
+          {[
+            { value: "overview",     icon: BarChart3, label: "Insights"  },
+            { value: "transactions", icon: Wallet,    label: "Activity"  },
+            { value: "budgets",      icon: Target,    label: "Budgets"   },
+            { value: "bills",        icon: Receipt,   label: "Bills"     },
+            { value: "goals",        icon: Calendar,  label: "Goals"     },
+          ].map(({ value, icon: Icon, label }) => (
             <TabsTrigger
-              value="overview"
-              className="px-6 rounded-xl data-[state=active]:bg-brand-teal data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-brand-teal/20 transition-all text-xs font-black uppercase tracking-widest gap-2 h-full"
+              key={value}
+              value={value}
+              className="
+                flex items-center gap-1.5 px-4 pb-3 pt-1 text-sm font-semibold
+                text-[#9CA3AF] dark:text-zinc-500
+                hover:text-on-surface dark:hover:text-white
+                border-b-2 border-transparent -mb-px
+                data-[state=active]:border-on-surface dark:data-[state=active]:border-white
+                data-[state=active]:text-on-surface dark:data-[state=active]:text-white
+                transition-all duration-150 cursor-pointer
+              "
             >
-              <BarChart3 size={16} strokeWidth={2.5} />
-              <span className="hidden sm:inline">Insights</span>
+              <Icon size={14} strokeWidth={2.5} />
+              <span className="hidden sm:inline">{label}</span>
             </TabsTrigger>
-            <TabsTrigger
-              value="transactions"
-              className="px-6 rounded-xl data-[state=active]:bg-brand-teal data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-brand-teal/20 transition-all text-xs font-black uppercase tracking-widest gap-2 h-full"
-            >
-              <Wallet size={16} strokeWidth={2.5} />
-              <span className="hidden sm:inline">Activity</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="budgets"
-              className="px-6 rounded-xl data-[state=active]:bg-brand-teal data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-brand-teal/20 transition-all text-xs font-black uppercase tracking-widest gap-2 h-full"
-            >
-              <Target size={16} strokeWidth={2.5} />
-              <span className="hidden sm:inline">Budgets</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="bills"
-              className="px-6 rounded-xl data-[state=active]:bg-brand-teal data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-brand-teal/20 transition-all text-xs font-black uppercase tracking-widest gap-2 h-full"
-            >
-              <Receipt size={16} strokeWidth={2.5} />
-              <span className="hidden sm:inline">Bills</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="goals"
-              className="px-6 rounded-xl data-[state=active]:bg-brand-teal data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-brand-teal/20 transition-all text-xs font-black uppercase tracking-widest gap-2 h-full"
-            >
-              <Calendar size={16} strokeWidth={2.5} />
-              <span className="hidden sm:inline">Goals</span>
-            </TabsTrigger>
-          </TabsList>
-        </div>
+          ))}
+        </TabsList>
 
         <Suspense
-          fallback={<Card className="h-[400px] w-full animate-pulse" />}
+          fallback={<Card className="h-96 w-full animate-pulse" />}
         >
           <TabsContent value="overview" className="space-y-8 outline-none">
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">

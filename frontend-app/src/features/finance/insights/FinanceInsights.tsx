@@ -204,7 +204,7 @@ export function FinanceInsights() {
   }, [transactions.data, velocityTab]);
 
   // Brand Palette: Tonal variations of emerald, teal, charcoal, amber, and purple
-  const COLORS = ["#042727", "#006b54", "#76001b", "#d39a3e", "#5f3ea3"];
+  const COLORS = ["#042727", "#10b981", "#ef4444", "#d39a3e", "#5f3ea3"];
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -228,7 +228,7 @@ export function FinanceInsights() {
                 </span>
               </div>
               <div className="flex items-center gap-1.5 mt-3">
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#74f6ce]/30 text-[#006b54] dark:bg-emerald-950/30 dark:text-emerald-400">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#74f6ce]/30 text-[#10b981] dark:bg-emerald-950/30 dark:text-emerald-400">
                   <ArrowUpRight size={10} strokeWidth={3} />
                   +12.4%
                 </span>
@@ -245,10 +245,10 @@ export function FinanceInsights() {
               <span className="text-[9px] font-bold text-[#042727]/60 dark:text-zinc-500 uppercase tracking-widest block">
                 Total Savings
               </span>
-              <span className="text-lg font-black font-mono text-[#006b54] dark:text-emerald-400">
+              <span className="text-lg font-black font-mono text-[#10b981] dark:text-emerald-400">
                 ${totalSavings.toLocaleString(undefined, { maximumFractionDigits: 2 })}
               </span>
-              <div className="h-[2px] w-12 bg-[#006b54] mt-2" />
+              <div className="h-[2px] w-12 bg-[#10b981] mt-2" />
             </div>
 
             <div className="space-y-1">
@@ -422,14 +422,14 @@ export function FinanceInsights() {
               <Bar
                 dataKey="income"
                 name="Income"
-                fill="#006b54"
+                fill="#10b981"
                 radius={[3, 3, 0, 0]}
                 barSize={velocityTab === "daily" ? 6 : velocityTab === "weekly" ? 16 : 24}
               />
               <Bar
                 dataKey="expense"
                 name="Expense"
-                fill="#76001b"
+                fill="#ef4444"
                 radius={[3, 3, 0, 0]}
                 barSize={velocityTab === "daily" ? 6 : velocityTab === "weekly" ? 16 : 24}
               />
@@ -439,11 +439,11 @@ export function FinanceInsights() {
 
         <div className="flex justify-center gap-6 mt-6 pt-4 border-t border-zinc-150/15 dark:border-zinc-800">
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#006b54]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#10b981]" />
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Income</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#76001b]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#ef4444]" />
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Expense</span>
           </div>
         </div>

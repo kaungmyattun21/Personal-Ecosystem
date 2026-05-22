@@ -1,4 +1,4 @@
-import { apiClient } from "../api-client";
+import { apiFetch } from "../api-client";
 import {
   Account,
   Category,
@@ -12,125 +12,72 @@ import {
 
 export const financeService = {
   // Accounts
-  getAccounts: async () => {
-    const { data } = await apiClient.get<Account[]>("/finance/accounts");
-    return data;
-  },
+  getAccounts: () => apiFetch<Account[]>("/finance/accounts"),
 
   // Categories
-  getCategories: async () => {
-    const { data } = await apiClient.get<Category[]>("/finance/categories");
-    return data;
-  },
+  getCategories: () => apiFetch<Category[]>("/finance/categories"),
 
   // Transactions
-  getTransactions: async (params?: TransactionFilterParams) => {
-    const { data } = await apiClient.get<Transaction[]>(
-      "/finance/transactions",
-      { params },
-    );
-    return data;
-  },
-  createTransaction: async (txData: Partial<Transaction>) => {
-    const { data } = await apiClient.post<Transaction>(
-      "/finance/transactions",
-      txData,
-    );
-    return data;
-  },
-  updateTransaction: async (id: string, txData: Partial<Transaction>) => {
-    const { data } = await apiClient.put<Transaction>(
-      `/finance/transactions/${id}`,
-      txData,
-    );
-    return data;
-  },
-  deleteTransaction: async (id: string) => {
-    await apiClient.delete(`/finance/transactions/${id}`);
-  },
-  bulkDeleteTransactions: async (ids: string[]) => {
-    await apiClient.post("/finance/transactions/bulk-delete", { ids });
-  },
+  getTransactions: (params?: TransactionFilterParams) =>
+    apiFetch<Transaction[]>("/finance/transactions", { params }),
+
+  createTransaction: (txData: Partial<Transaction>) =>
+    apiFetch<Transaction>("/finance/transactions", { method: "POST", body: txData }),
+
+  updateTransaction: (id: string, txData: Partial<Transaction>) =>
+    apiFetch<Transaction>(`/finance/transactions/${id}`, { method: "PUT", body: txData }),
+
+  deleteTransaction: (id: string) =>
+    apiFetch(`/finance/transactions/${id}`, { method: "DELETE" }),
+
+  bulkDeleteTransactions: (ids: string[]) =>
+    apiFetch("/finance/transactions/bulk-delete", { method: "POST", body: { ids } }),
 
   // Budgets
-  getBudgets: async () => {
-    const { data } = await apiClient.get<Budget[]>("/finance/budgets");
-    return data;
-  },
-  createBudget: async (budgetData: Partial<Budget>) => {
-    const { data } = await apiClient.post<Budget>(
-      "/finance/budgets",
-      budgetData,
-    );
-    return data;
-  },
-  updateBudget: async (id: string, budgetData: Partial<Budget>) => {
-    const { data } = await apiClient.put<Budget>(
-      `/finance/budgets/${id}`,
-      budgetData,
-    );
-    return data;
-  },
-  deleteBudget: async (id: string) => {
-    await apiClient.delete(`/finance/budgets/${id}`);
-  },
-  bulkDeleteBudgets: async (ids: string[]) => {
-    await apiClient.post("/finance/budgets/bulk-delete", { ids });
-  },
+  getBudgets: () => apiFetch<Budget[]>("/finance/budgets"),
+
+  createBudget: (budgetData: Partial<Budget>) =>
+    apiFetch<Budget>("/finance/budgets", { method: "POST", body: budgetData }),
+
+  updateBudget: (id: string, budgetData: Partial<Budget>) =>
+    apiFetch<Budget>(`/finance/budgets/${id}`, { method: "PUT", body: budgetData }),
+
+  deleteBudget: (id: string) =>
+    apiFetch(`/finance/budgets/${id}`, { method: "DELETE" }),
+
+  bulkDeleteBudgets: (ids: string[]) =>
+    apiFetch("/finance/budgets/bulk-delete", { method: "POST", body: { ids } }),
 
   // Bills
-  getBills: async () => {
-    const { data } = await apiClient.get<Bill[]>("/finance/bills");
-    return data;
-  },
-  createBill: async (billData: Partial<Bill>) => {
-    const { data } = await apiClient.post<Bill>("/finance/bills", billData);
-    return data;
-  },
-  updateBill: async (id: string, billData: Partial<Bill>) => {
-    const { data } = await apiClient.put<Bill>(
-      `/finance/bills/${id}`,
-      billData,
-    );
-    return data;
-  },
-  deleteBill: async (id: string) => {
-    await apiClient.delete(`/finance/bills/${id}`);
-  },
+  getBills: () => apiFetch<Bill[]>("/finance/bills"),
+
+  createBill: (billData: Partial<Bill>) =>
+    apiFetch<Bill>("/finance/bills", { method: "POST", body: billData }),
+
+  updateBill: (id: string, billData: Partial<Bill>) =>
+    apiFetch<Bill>(`/finance/bills/${id}`, { method: "PUT", body: billData }),
+
+  deleteBill: (id: string) =>
+    apiFetch(`/finance/bills/${id}`, { method: "DELETE" }),
 
   // Saving Goals
-  getSavingGoals: async () => {
-    const { data } = await apiClient.get<SavingGoal[]>("/finance/goals");
-    return data;
-  },
-  createSavingGoal: async (goalData: Partial<SavingGoal>) => {
-    const { data } = await apiClient.post<SavingGoal>(
-      "/finance/goals",
-      goalData,
-    );
-    return data;
-  },
-  updateSavingGoal: async (id: string, goalData: Partial<SavingGoal>) => {
-    const { data } = await apiClient.put<SavingGoal>(
-      `/finance/goals/${id}`,
-      goalData,
-    );
-    return data;
-  },
-  deleteSavingGoal: async (id: string) => {
-    await apiClient.delete(`/finance/goals/${id}`);
-  },
-  getSavingContributions: async (goalId: string) => {
-    const { data } = await apiClient.get<SavingContribution[]>(
-      `/finance/goals/${goalId}/contributions`,
-    );
-    return data;
-  },
-  createSavingContribution: async (contributionData: any) => {
-    const { data } = await apiClient.post<SavingContribution>(
-      "/finance/goals/contributions",
-      contributionData,
-    );
-    return data;
-  },
+  getSavingGoals: () => apiFetch<SavingGoal[]>("/finance/goals"),
+
+  createSavingGoal: (goalData: Partial<SavingGoal>) =>
+    apiFetch<SavingGoal>("/finance/goals", { method: "POST", body: goalData }),
+
+  updateSavingGoal: (id: string, goalData: Partial<SavingGoal>) =>
+    apiFetch<SavingGoal>(`/finance/goals/${id}`, { method: "PUT", body: goalData }),
+
+  deleteSavingGoal: (id: string) =>
+    apiFetch(`/finance/goals/${id}`, { method: "DELETE" }),
+
+  getSavingContributions: (goalId: string) =>
+    apiFetch<SavingContribution[]>(`/finance/goals/${goalId}/contributions`),
+
+  createSavingContribution: (contributionData: any) =>
+    apiFetch<SavingContribution>("/finance/goals/contributions", {
+      method: "POST",
+      body: contributionData,
+    }),
 };
