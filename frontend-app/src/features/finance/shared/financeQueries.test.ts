@@ -48,7 +48,7 @@ describe('Finance Query Logic', () => {
       
       // Execute the queryFn manually
       if (typeof options.queryFn === 'function') {
-        options.queryFn({ queryKey: options.queryKey, meta: undefined, signal: new AbortController().signal });
+        options.queryFn({ queryKey: options.queryKey, meta: undefined, signal: new AbortController().signal, client: {} as any });
         expect(financeService.getTransactions).toHaveBeenCalledWith(filters);
       }
     });

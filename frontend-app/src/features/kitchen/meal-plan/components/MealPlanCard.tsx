@@ -44,7 +44,7 @@ export function MealPlanCard({ plan, onEdit, onDelete, onView }: MealPlanCardPro
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-teal/70">
               Meal Plan
             </p>
-            <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight italic">
+            <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
               {format(new Date(plan.startDate), "MMM d")} - {format(new Date(plan.endDate), "MMM d")}
             </h3>
           </div>

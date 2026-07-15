@@ -14,19 +14,19 @@ import { Transaction } from "@/types/finance";
 const TYPE_CONFIG = {
   INCOME: {
     icon: ArrowDownLeft,
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
-    badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+    color: "text-[#10b981] dark:text-emerald-500",
+    bg: "bg-[#10b981]/10",
+    badge: "bg-[#10b981]/10 text-[#10b981] dark:text-emerald-500",
     sign: "+",
-    amountColor: "text-emerald-700 dark:text-emerald-400",
+    amountColor: "text-[#10b981] dark:text-emerald-500",
   },
   EXPENSE: {
     icon: ArrowUpRight,
-    color: "text-rose-500",
-    bg: "bg-rose-500/10",
-    badge: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
+    color: "text-[#ef4444] dark:text-red-400",
+    bg: "bg-[#ef4444]/10",
+    badge: "bg-[#ef4444]/10 text-[#ef4444] dark:text-red-400",
     sign: "-",
-    amountColor: "text-rose-600 dark:text-rose-400",
+    amountColor: "text-[#ef4444] dark:text-red-400",
   },
   TRANSFER: {
     icon: ArrowLeftRight,
@@ -61,8 +61,7 @@ export function TransactionRow({
   return (
     <tr
       className={cn(
-        "group transition-colors hover:bg-brand-teal/[0.02] dark:hover:bg-white/[0.02]",
-        !isLast && "border-b border-black/[0.03] dark:border-white/[0.03]",
+        "group transition-colors hover:bg-[#f2f4f5] dark:hover:bg-white/[0.02]",
         isSelected && "bg-brand-teal/[0.04] dark:bg-white/[0.04]"
       )}
     >
@@ -120,7 +119,7 @@ export function TransactionRow({
                 <span className="h-1 w-1 rounded-full bg-emerald-500/30" />
               )}
               {tx.type === "INCOME" && (
-                <p className="text-[10px] font-bold text-emerald-700 uppercase italic">
+                <p className="text-[10px] font-bold text-emerald-500 uppercase italic">
                   External
                 </p>
               )}
@@ -188,7 +187,7 @@ export function TransactionRow({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-xl hover:bg-rose-500/10 hover:text-rose-500 text-slate-400 transition-colors"
+            className="h-8 w-8 rounded-xl hover:bg-red-500/10 hover:text-red-500 text-slate-400 transition-colors"
             title="Delete transaction"
             onClick={() => onDelete(tx)}
           >

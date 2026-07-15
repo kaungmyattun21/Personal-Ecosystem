@@ -45,7 +45,7 @@ export function MealPlanGridView({ plan, days, getMealsForDay }: MealPlanGridVie
                 <p className="text-[10px] font-black uppercase tracking-widest text-brand-teal/70 mb-1">
                   {format(day, "EEEE")}
                 </p>
-                <h4 className="text-lg font-black italic tracking-tighter text-slate-900 dark:text-white">
+                <h4 className="text-lg font-black tracking-tighter text-slate-900 dark:text-white">
                   {format(day, "MMM d")}
                 </h4>
               </div>
@@ -83,7 +83,7 @@ export function MealPlanGridView({ plan, days, getMealsForDay }: MealPlanGridVie
                           className="h-full bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-white/10 flex flex-col justify-between group/meal relative"
                         >
                           <div>
-                            <h5 className="text-xs font-black text-slate-900 dark:text-white leading-tight line-clamp-2 uppercase italic mb-2">
+                            <h5 className="text-xs font-black text-slate-900 dark:text-white leading-tight line-clamp-2 uppercase mb-2">
                               {meal.name}
                             </h5>
                             {meal.ingredients && meal.ingredients.length > 0 && (
@@ -110,7 +110,7 @@ export function MealPlanGridView({ plan, days, getMealsForDay }: MealPlanGridVie
                                 </TooltipTrigger>
                                 <TooltipContent className="rounded-2xl p-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-2xl">
                                   <div className="space-y-2 max-w-[200px]">
-                                    <p className="text-xs font-black uppercase italic text-brand-teal">Ingredients:</p>
+                                    <p className="text-xs font-black uppercase text-brand-teal">Ingredients:</p>
                                     <ul className="space-y-1">
                                       {meal.ingredients?.map((ing, i) => (
                                         <li key={i} className="text-[10px] font-bold text-slate-600 dark:text-slate-300 flex justify-between gap-4">
@@ -121,8 +121,8 @@ export function MealPlanGridView({ plan, days, getMealsForDay }: MealPlanGridVie
                                     </ul>
                                     {meal.notes && (
                                       <>
-                                        <p className="text-xs font-black uppercase italic text-brand-teal mt-2">Notes:</p>
-                                        <p className="text-[10px] font-medium text-slate-500 italic">{meal.notes}</p>
+                                        <p className="text-xs font-black uppercase text-brand-teal mt-2">Notes:</p>
+                                        <p className="text-[10px] font-medium text-slate-500">{meal.notes}</p>
                                       </>
                                     )}
                                   </div>

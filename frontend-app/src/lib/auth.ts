@@ -1,8 +1,20 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import axios from "axios";
 import { NEXT_PUBLIC_API_URL } from "@/lib/env";
+
+async function authFetch<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${NEXT_PUBLIC_API_URL}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => res.statusText);
+    throw new Error(`${res.status} ${text}`);
+  }
+  return res.json();
+}
 
 const parseJwtExp = (token: string): number => {
   try {
@@ -27,30 +39,22 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
-          const res = await axios.post(`${NEXT_PUBLIC_API_URL}/auth/login`, {
+          const data = await authFetch<{
+            user: { id: string; name: string; email: string };
+            accessToken: string;
+            refreshToken: string;
+          }>("/auth/login", {
             email: credentials.email,
             password: credentials.password,
           });
 
-          const { user, accessToken, refreshToken } = res.data;
-
+          const { user, accessToken, refreshToken } = data;
           if (user && accessToken && refreshToken) {
-            return {
-              id: user.id || user.id,
-              name: user.name,
-              email: user.email,
-              accessToken,
-              refreshToken,
-            };
+            return { id: user.id, name: user.name, email: user.email, accessToken, refreshToken };
           }
           return null;
         } catch (error) {
-          console.error(
-            "Credentials login failed:",
-            axios.isAxiosError(error)
-              ? error.response?.data || error.message
-              : error,
-          );
+          console.error("Credentials login failed:", error);
           return null;
         }
       },
@@ -65,23 +69,21 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async jwt({ token, user, account }) {
-      // Initial sign-in step
       if (account && user) {
         if (account.provider === "google") {
           try {
-            // Exchange Google profile with our backend
-            const res = await axios.post(
-              `${NEXT_PUBLIC_API_URL}/auth/oauth-login`,
-              {
-                email: user.email,
-                name: user.name,
-                googleId: account.providerAccountId,
-                imageUrl: user.image,
-              },
-            );
+            const data = await authFetch<{
+              user: { id: string };
+              accessToken: string;
+              refreshToken: string;
+            }>("/auth/oauth-login", {
+              email: user.email,
+              name: user.name,
+              googleId: account.providerAccountId,
+              imageUrl: user.image,
+            });
 
-            const { user: backendUser, accessToken, refreshToken } = res.data;
-
+            const { user: backendUser, accessToken, refreshToken } = data;
             if (backendUser && accessToken && refreshToken) {
               token.id = backendUser.id;
               token.accessToken = accessToken;
@@ -89,16 +91,10 @@ export const authOptions: NextAuthOptions = {
               token.accessTokenExpires = parseJwtExp(accessToken);
             }
           } catch (error) {
-            console.error(
-              "OAuth backend exchange failed:",
-              axios.isAxiosError(error)
-                ? error.response?.data || error.message
-                : error,
-            );
+            console.error("OAuth backend exchange failed:", error);
             token.error = "OAuthExchangeError";
           }
         } else if (account.provider === "credentials") {
-          // Credentials flow already exchanged tokens in authorize callback
           token.id = user.id;
           token.accessToken = user.accessToken;
           token.refreshToken = user.refreshToken;
@@ -107,44 +103,32 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
-      // Return previous token if the access token has not expired yet
       if (Date.now() < (token.accessTokenExpires as number)) {
         return token;
       }
 
-      // Access token has expired, try to update it using the /refresh endpoint
       try {
-        const res = await axios.post(`${NEXT_PUBLIC_API_URL}/auth/refresh`, {
-          refreshToken: token.refreshToken,
-        });
+        const data = await authFetch<{
+          accessToken: string;
+          refreshToken?: string;
+        }>("/auth/refresh", { refreshToken: token.refreshToken });
 
-        const { accessToken, refreshToken } = res.data;
-
-        token.accessToken = accessToken;
-        // If the backend returns a new refresh token we use it, otherwise keep the old one
-        token.refreshToken = refreshToken ?? token.refreshToken;
-        token.accessTokenExpires = parseJwtExp(accessToken);
+        token.accessToken = data.accessToken;
+        token.refreshToken = data.refreshToken ?? token.refreshToken;
+        token.accessTokenExpires = parseJwtExp(data.accessToken);
         token.error = undefined;
         return token;
       } catch (error) {
-        console.error(
-          "Error refreshing access token",
-          axios.isAxiosError(error)
-            ? error.response?.data || error.message
-            : error,
-        );
+        console.error("Error refreshing access token:", error);
         token.error = "RefreshAccessTokenError";
         return token;
       }
     },
     async session({ session, token }) {
-      session.user = {
-        ...session.user,
-        id: token.id as string,
-      };
+      session.user = { ...session.user, id: token.id as string };
       session.accessToken = token.accessToken as string;
+      session.accessTokenExpires = token.accessTokenExpires as number;
       session.error = token.error as string | undefined;
-
       return session;
     },
   },

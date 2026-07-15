@@ -35,8 +35,8 @@ export function TransactionFilters({
       className={cn(
         "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0",
         filterType === type
-          ? "bg-brand-teal text-white shadow-lg shadow-brand-teal/20"
-          : "bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/40 hover:bg-slate-200 dark:hover:bg-white/10"
+          ? "bg-[#c7e9e8] text-[#042727] shadow-sm"
+          : "bg-slate-100 dark:bg-white/5 text-slate-450 dark:text-white/40 hover:bg-slate-200 dark:hover:bg-white/10"
       )}
     >
       {label}
@@ -55,17 +55,17 @@ export function TransactionFilters({
   }, [categories.data]);
 
   return (
-    <div className="px-6 py-5 border-b border-black/[0.03] dark:border-white/[0.03] flex flex-col gap-4">
+    <div className="px-8 py-6 border-none flex flex-col gap-4">
       {selectedCount > 0 && (
-        <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 border-b border-black/[0.03] dark:border-white/[0.03] pb-4">
-          <span className="text-[10px] font-black uppercase text-rose-500 mr-2 tabular-nums">
+        <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 border-none pb-4">
+          <span className="text-[10px] font-black uppercase text-red-500 mr-2 tabular-nums">
             {selectedCount} Selected
           </span>
           <Button
             variant="destructive"
             size="sm"
             onClick={onBulkDelete}
-            className="h-8 rounded-xl px-4 bg-rose-500 hover:bg-rose-600 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-rose-500/20 active:scale-95 transition-all text-white"
+            className="h-8 rounded-xl px-4 bg-red-500 hover:bg-red-600 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 active:scale-95 transition-all text-white"
           >
             Delete Selection
           </Button>
@@ -82,7 +82,7 @@ export function TransactionFilters({
 
       <div className="flex flex-wrap items-center gap-4">
         {/* Main Category/Type Filters */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-white/5 rounded-2xl w-fit">
+        <div className="flex items-center gap-1.5 p-1 bg-[#f2f4f5] dark:bg-white/5 rounded-2xl w-fit">
           <FilterChip type="ALL" label="All" />
           <FilterChip type="INCOME" label="Income" />
           <FilterChip type="EXPENSE" label="Expenses" />

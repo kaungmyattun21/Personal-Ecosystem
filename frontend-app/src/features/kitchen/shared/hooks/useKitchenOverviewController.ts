@@ -46,6 +46,7 @@ export function useKitchenOverviewController() {
 
   return {
     stats,
+    groceries: groceryItems.data ?? [],
     isLoading,
   };
 }

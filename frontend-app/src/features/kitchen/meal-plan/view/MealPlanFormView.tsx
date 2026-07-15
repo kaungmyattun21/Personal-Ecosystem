@@ -304,7 +304,7 @@ function MealItemRow({ index, register, control, removeMeal, duplicateMeal, groc
             </div>
           ))}
           {ingredientFields.length === 0 && (
-            <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest italic pl-1">
+            <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest pl-1">
               No ingredients listed
             </p>
           )}

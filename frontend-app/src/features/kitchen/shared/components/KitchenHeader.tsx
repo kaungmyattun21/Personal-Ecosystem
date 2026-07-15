@@ -18,11 +18,11 @@ export function KitchenHeader() {
   return (
     <div className="flex flex-col lg:flex-row items-start justify-between gap-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl lg:text-5xl font-black tracking-tighter text-brand-teal dark:text-white uppercase italic leading-none">
-          Kitchen <span className="text-brand-emerald">Command</span>
+        <h1 className="text-3xl lg:text-5xl font-black tracking-tighter text-brand-teal dark:text-white uppercase leading-none">
+          Kitchen <span className="text-brand-emerald">Intelligence</span>
         </h1>
-        <p className="text-[10px] lg:text-[11px] font-black uppercase tracking-[0.3em] text-brand-teal/70 dark:text-zinc-400 max-w-md leading-relaxed">
-          Optimize your sustenance through granular inventory tracking and high-velocity meal planning logic.
+        <p className="text-[10px] lg:text-[11px] font-black uppercase tracking-[0.3em] text-brand-teal/75 dark:text-zinc-400 max-w-md leading-relaxed">
+          WEALTH OF HEALTH
         </p>
 
         <div className="flex flex-wrap items-center gap-2 mt-6">

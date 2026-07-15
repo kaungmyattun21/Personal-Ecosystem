@@ -75,16 +75,16 @@ export function BudgetRow({
 
   const progressColor =
     budget.status === "critical"
-      ? "#F43F5E"
+      ? "#ef4444"
       : budget.status === "warning"
-        ? "#F59E0B"
-        : "#00A389";
+        ? "#d39a3e"
+        : "#10b981";
 
   return (
     <div
       className={cn(
         "space-y-2",
-        isChild && "pl-4 border-l-2 border-slate-100 dark:border-white/10 ml-2",
+        isChild && "pl-4 border-l border-zinc-150/15 dark:border-white/5 ml-2",
       )}
     >
       <div className="space-y-2">
@@ -95,7 +95,7 @@ export function BudgetRow({
               type="checkbox"
               checked={selectedIds.includes(budget.id)}
               onChange={() => onToggleSelect(budget.id)}
-              className="h-3.5 w-3.5 rounded border-slate-200 bg-white/50 dark:bg-white/5 text-brand-teal focus:ring-brand-teal/20 transition-all cursor-pointer mr-1"
+              className="h-3.5 w-3.5 rounded border-[#042727]/20 bg-white/50 dark:bg-white/5 text-[#10b981] focus:ring-[#10b981]/20 transition-all cursor-pointer mr-1"
             />
             {hasChildren ? (
               <button
@@ -115,13 +115,13 @@ export function BudgetRow({
             <div className="min-w-0">
               <p
                 className={cn(
-                  "font-black uppercase italic tracking-tighter text-brand-teal dark:text-white leading-none truncate",
+                  "font-black uppercase tracking-tighter text-[#042727] dark:text-white leading-none truncate",
                   isChild ? "text-[11px]" : "text-[13px]",
                 )}
               >
                 {label}
               </p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-brand-teal-light mt-0.5">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-[#042727]/60 dark:text-zinc-500 mt-0.5">
                 {budget.period}
               </p>
             </div>
@@ -130,7 +130,7 @@ export function BudgetRow({
           <div className="flex items-center gap-2 shrink-0">
             <p
               className={cn(
-                "font-black italic tracking-tighter text-brand-teal dark:text-white text-right",
+                "font-black tracking-tighter text-[#042727] dark:text-white text-right",
                 isChild ? "text-[11px]" : "text-[13px]",
               )}
             >
@@ -148,7 +148,7 @@ export function BudgetRow({
             <button
               type="button"
               onClick={() => dispatch(openEditBudget(budget.id))}
-              className="shrink-0 h-6 w-6 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-white/10 text-slate-400 hover:text-brand-teal hover:bg-brand-teal/10 transition-colors"
+              className="shrink-0 h-6 w-6 flex items-center justify-center rounded-lg bg-[#f2f4f5] dark:bg-white/5 text-slate-400 hover:text-[#10b981] hover:bg-[#10b981]/10 transition-colors"
             >
               <Pencil className="h-3 w-3" strokeWidth={2.5} />
             </button>
@@ -160,6 +160,7 @@ export function BudgetRow({
                   description: `Are you sure you want to delete "${label}"? This will also remove any sub-budgets. Transactions linked to this budget will remain but won't be categorized under it.`,
                   variant: "destructive",
                 });
+
                 if (isConfirmed) {
                   try {
                     await deleteBudget.mutateAsync(budget.id);
@@ -169,7 +170,7 @@ export function BudgetRow({
                   }
                 }
               }}
-              className="shrink-0 h-6 w-6 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-white/10 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+              className="shrink-0 h-6 w-6 flex items-center justify-center rounded-lg bg-[#f2f4f5] dark:bg-white/5 text-slate-400 hover:text-[#ef4444] hover:bg-[#ef4444]/10 transition-colors"
             >
               <Trash2 className="h-3 w-3" strokeWidth={2.5} />
             </button>
@@ -179,7 +180,7 @@ export function BudgetRow({
         {/* Progress bar */}
         <Progress
           value={Math.min(budget.percentage, 100)}
-          className="h-1.5 rounded-full bg-slate-100 dark:bg-white/10"
+          className="h-1.5 rounded-full bg-[#f2f4f5] dark:bg-white/5"
           style={
             { "--progress-background": progressColor } as React.CSSProperties
           }
@@ -189,7 +190,7 @@ export function BudgetRow({
         <div className="flex items-center gap-1.5">
           {budget.status === "safe" ? (
             <CheckCircle2
-              className="h-3 w-3 text-brand-emerald"
+              className="h-3 w-3 text-[#10b981]"
               strokeWidth={3}
             />
           ) : (
@@ -197,8 +198,8 @@ export function BudgetRow({
               className={cn(
                 "h-3 w-3",
                 budget.status === "warning"
-                  ? "text-amber-500"
-                  : "text-rose-500",
+                  ? "text-[#d39a3e]"
+                  : "text-[#ef4444]",
               )}
               strokeWidth={3}
             />
@@ -206,9 +207,9 @@ export function BudgetRow({
           <p
             className={cn(
               "text-[9px] font-black uppercase tracking-widest",
-              budget.status === "safe" && "text-brand-emerald",
-              budget.status === "warning" && "text-amber-600",
-              budget.status === "critical" && "text-rose-600",
+              budget.status === "safe" && "text-[#10b981]",
+              budget.status === "warning" && "text-[#d39a3e]",
+              budget.status === "critical" && "text-[#ef4444]",
             )}
           >
             {budget.status === "critical"
@@ -282,21 +283,30 @@ export function BudgetTracker({ compact }: BudgetTrackerProps) {
 
   if (budgets.isLoading) {
     return (
-      <Card className="h-[400px] flex items-center justify-center animate-pulse">
-        <p className="text-muted-foreground">Loading budgets...</p>
+      <Card className="p-8 flex flex-col gap-6 border-none bg-white dark:bg-zinc-900/50 rounded-[24px]">
+        <div className="h-5 w-32 rounded-full bg-slate-200 dark:bg-white/10 animate-pulse" />
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="space-y-2 animate-pulse">
+            <div className="flex justify-between">
+              <div className="h-3 w-28 rounded-full bg-slate-200 dark:bg-white/10" />
+              <div className="h-3 w-16 rounded-full bg-slate-200 dark:bg-white/10" />
+            </div>
+            <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-white/5" />
+          </div>
+        ))}
       </Card>
     );
   }
 
   return (
-    <Card className="h-full p-8 flex flex-col">
+    <Card className="h-full p-8 flex flex-col border-none bg-white dark:bg-zinc-900/50 shadow-[0_12px_32px_-4px_rgba(4,39,39,0.04)] rounded-[24px]">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h3 className="text-base font-black uppercase italic tracking-tighter text-brand-teal dark:text-white">
+          <h3 className="text-base font-extrabold font-display uppercase tracking-tighter text-[#042727] dark:text-white">
             Budget Control
           </h3>
-          <p className="text-[9px] font-bold uppercase tracking-widest text-brand-teal-light dark:text-zinc-500 mt-1">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-[#042727]/60 dark:text-zinc-500 mt-1">
             Categorized Spending Caps
           </p>
         </div>
@@ -305,10 +315,10 @@ export function BudgetTracker({ compact }: BudgetTrackerProps) {
             <button
               type="button"
               onClick={handleBulkDelete}
-              className="flex items-center gap-2 h-8 px-3 rounded-xl bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-500/20 active:scale-95 transition-all animate-in fade-in slide-in-from-right-4"
+              className="flex items-center gap-2 h-8 px-3 rounded-full bg-[#ef4444] hover:bg-[#ef4444]/90 text-white shadow-lg active:scale-95 transition-all animate-in fade-in slide-in-from-right-4"
             >
               <Trash2 className="h-3.5 w-3.5" strokeWidth={2.5} />
-              <span className="text-[10px] font-black uppercase tracking-widest">
+              <span className="text-[9px] font-black uppercase tracking-widest">
                 Delete {selectedIds.length}
               </span>
             </button>
@@ -316,13 +326,13 @@ export function BudgetTracker({ compact }: BudgetTrackerProps) {
           <button
             type="button"
             onClick={() => dispatch(setAddBudgetModalOpen(true))}
-            className="h-8 w-8 flex items-center justify-center rounded-xl bg-brand-teal/10 text-brand-teal hover:bg-brand-teal/20 transition-colors"
+            className="h-8 w-8 flex items-center justify-center rounded-full bg-[#f2f4f5] dark:bg-white/5 text-[#10b981] hover:bg-[#10b981] hover:text-white transition-all cursor-pointer"
             title="Add budget"
           >
             <Plus className="h-4 w-4" strokeWidth={2.5} />
           </button>
           <TrendingUp
-            className="h-5 w-5 text-brand-emerald"
+            className="h-5 w-5 text-[#10b981]"
             strokeWidth={2.5}
           />
         </div>
@@ -347,7 +357,7 @@ export function BudgetTracker({ compact }: BudgetTrackerProps) {
             <button
               type="button"
               onClick={() => dispatch(setAddBudgetModalOpen(true))}
-              className="text-xs font-bold text-brand-teal hover:underline"
+              className="text-xs font-bold text-[#10b981] hover:underline"
             >
               + Create your first budget
             </button>

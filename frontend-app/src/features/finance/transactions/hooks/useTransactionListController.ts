@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useDispatch } from "react-redux";
+import { format } from "date-fns";
 import { openEditTransaction } from "@/lib/store/features/finance/finance-slice";
 import { Transaction } from "@/types/finance";
 import { useConfirm } from "@/providers/confirm-provider";
@@ -109,7 +110,6 @@ export function useTransactionListController(options: UseTransactionListOptions 
   const filteredAndSortedData = useMemo(() => {
     let list: Transaction[] = transactions.data ?? [];
 
-    // Client-side Sort (Keep for now as backend filtering is implemented)
     list = [...list].sort((a, b) => {
       let aVal: string | number = "";
       let bVal: string | number = "";
@@ -137,6 +137,39 @@ export function useTransactionListController(options: UseTransactionListOptions 
     return limit ? list.slice(0, limit) : list;
   }, [transactions.data, sortKey, sortDir, limit]);
 
+  // Derived summary stats over the visible data set
+  const { totalInflow, totalOutflow, netBalance } = useMemo(() => {
+    let inflow = 0;
+    let outflow = 0;
+    for (const tx of filteredAndSortedData) {
+      const amt = parseFloat(tx.amount) || 0;
+      if (tx.type === "INCOME") inflow += Math.abs(amt);
+      else if (tx.type === "EXPENSE") outflow += Math.abs(amt);
+    }
+    return { totalInflow: inflow, totalOutflow: outflow, netBalance: inflow - outflow };
+  }, [filteredAndSortedData]);
+
+  // CSV export — DOM interaction lives here, view just calls this
+  const handleExportCSV = () => {
+    const headers = "Description,Category,Account,Date,Amount,Type\n";
+    const rows = filteredAndSortedData.map((tx) => {
+      const dateStr = format(new Date(tx.date), "yyyy-MM-dd HH:mm:ss");
+      const category = tx.category?.name || "";
+      const account = tx.account?.name || "";
+      const description = (tx.description || "").replace(/"/g, '""');
+      return `"${description}","${category}","${account}","${dateStr}",${tx.amount},"${tx.type}"`;
+    });
+    const blob = new Blob([headers + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `transactions_export_${format(new Date(), "yyyyMMdd")}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return {
     data: filteredAndSortedData,
     isLoading: transactions.isLoading,
@@ -154,9 +187,13 @@ export function useTransactionListController(options: UseTransactionListOptions 
     handleEdit,
     handleDelete,
     handleBulkDelete,
+    handleExportCSV,
     selectedIds,
     setSelectedIds,
     toggleSelectAll: () => toggleSelectAll(filteredAndSortedData.map(tx => tx.id)),
     toggleSelect,
+    totalInflow,
+    totalOutflow,
+    netBalance,
   };
 }

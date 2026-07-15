@@ -54,7 +54,7 @@ export function TransactionTable({
       {data.length > 0 ? (
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b border-black/[0.04] dark:border-white/[0.04] bg-slate-50/60 dark:bg-white/[0.02]">
+            <tr className="bg-[#f2f4f5] dark:bg-white/[0.02]">
               <th className="w-12 px-4 py-3">
                 <div className="flex items-center justify-center">
                   <input
