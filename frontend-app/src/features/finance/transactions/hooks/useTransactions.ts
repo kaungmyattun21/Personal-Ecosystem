@@ -1,12 +1,26 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, QueryKey } from "@tanstack/react-query";
 import { financeService } from "@/lib/services/finance-service";
-import { Transaction, Bill, Account, TransactionFilterParams } from "@/types/finance";
+import { Transaction, Bill, TransactionFilterParams } from "@/types/finance";
 import { financeKeys, financeQueries } from "../../shared/financeQueries";
+
+
+type TransactionSnapshot = [QueryKey, Transaction[] | undefined][];
 
 export function useTransactions(filters?: TransactionFilterParams) {
   const queryClient = useQueryClient();
 
   const transactions = useQuery(financeQueries.transactions(filters));
+
+  const snapshotTransactions = (): TransactionSnapshot =>
+    queryClient.getQueriesData<Transaction[]>({
+      queryKey: financeKeys.transactions.all(),
+    });
+
+  const restoreTransactions = (snapshot?: TransactionSnapshot) => {
+    snapshot?.forEach(([key, data]) => {
+      queryClient.setQueryData(key, data);
+    });
+  };
 
   const createTransaction = useMutation({
     mutationFn: (data: Partial<Transaction>) =>
@@ -15,27 +29,21 @@ export function useTransactions(filters?: TransactionFilterParams) {
       await Promise.all([
         queryClient.cancelQueries({ queryKey: financeKeys.transactions.all() }),
         queryClient.cancelQueries({ queryKey: financeKeys.bills() }),
-        queryClient.cancelQueries({ queryKey: financeKeys.accounts() }),
       ]);
 
-      const previousTx = queryClient.getQueryData<Transaction[]>(financeKeys.transactions.all());
+      const previousTx = snapshotTransactions();
       const previousBills = queryClient.getQueryData<Bill[]>(financeKeys.bills());
-      const previousAccounts = queryClient.getQueryData<Account[]>(financeKeys.accounts());
 
-      // Optimistically update transactions
-      if (previousTx) {
-        queryClient.setQueryData<Transaction[]>(
-          financeKeys.transactions.all(),
-          [
-            {
-              ...newTx,
-              id: "temp-" + Date.now(),
-              date: newTx.date || new Date().toISOString(),
-            } as Transaction,
-            ...previousTx,
-          ],
-        );
-      }
+      const optimisticTx = {
+        ...newTx,
+        id: "temp-" + Date.now(),
+        date: newTx.date || new Date().toISOString(),
+      } as Transaction;
+
+      queryClient.setQueriesData<Transaction[]>(
+        { queryKey: financeKeys.transactions.all() },
+        (old) => (old ? [optimisticTx, ...old] : old),
+      );
 
       // Optimistically update bills if billId present
       if (previousBills && newTx.billId) {
@@ -47,41 +55,12 @@ export function useTransactions(filters?: TransactionFilterParams) {
         );
       }
 
-      // Optimistically update account balance
-      if (previousAccounts && newTx.accountId && newTx.amount) {
-        queryClient.setQueryData<Account[]>(
-          financeKeys.accounts(),
-          previousAccounts.map((acc) => {
-            if (acc.id === newTx.accountId) {
-              const change =
-                newTx.type === "INCOME"
-                   ? Number(newTx.amount)
-                   : -Number(newTx.amount);
-              return {
-                ...acc,
-                balance: (Number(acc.balance) + change).toString(),
-              };
-            }
-            return acc;
-          }),
-        );
-      }
-
-      return { previousTx, previousBills, previousAccounts };
+      return { previousTx, previousBills };
     },
     onError: (err, newTx, context) => {
-      if (context?.previousTx)
-        queryClient.setQueryData(
-          financeKeys.transactions.all(),
-          context.previousTx,
-        );
+      restoreTransactions(context?.previousTx);
       if (context?.previousBills)
         queryClient.setQueryData(financeKeys.bills(), context.previousBills);
-      if (context?.previousAccounts)
-        queryClient.setQueryData(
-          financeKeys.accounts(),
-          context.previousAccounts,
-        );
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: financeKeys.all });
@@ -95,18 +74,18 @@ export function useTransactions(filters?: TransactionFilterParams) {
       await queryClient.cancelQueries({
         queryKey: financeKeys.transactions.all(),
       });
-      const previous = queryClient.getQueryData<Transaction[]>(financeKeys.transactions.all());
-      if (previous) {
-        queryClient.setQueryData<Transaction[]>(
-          financeKeys.transactions.all(),
-          previous.map((tx) => (tx.id === id ? { ...tx, ...data } : tx)),
-        );
-      }
+
+      const previous = snapshotTransactions();
+
+      queryClient.setQueriesData<Transaction[]>(
+        { queryKey: financeKeys.transactions.all() },
+        (old) => old?.map((tx) => (tx.id === id ? { ...tx, ...data } : tx)),
+      );
+
       return { previous };
     },
     onError: (_err, _vars, context) => {
-      if (context?.previous)
-        queryClient.setQueryData(financeKeys.transactions.all(), context.previous);
+      restoreTransactions(context?.previous);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: financeKeys.all });
@@ -119,22 +98,19 @@ export function useTransactions(filters?: TransactionFilterParams) {
       await Promise.all([
         queryClient.cancelQueries({ queryKey: financeKeys.transactions.all() }),
         queryClient.cancelQueries({ queryKey: financeKeys.bills() }),
-        queryClient.cancelQueries({ queryKey: financeKeys.accounts() }),
       ]);
 
-      const previousTx = queryClient.getQueryData<Transaction[]>(financeKeys.transactions.all());
+      const previousTx = snapshotTransactions();
       const previousBills = queryClient.getQueryData<Bill[]>(financeKeys.bills());
-      const previousAccounts = queryClient.getQueryData<Account[]>(financeKeys.accounts());
 
-      const txToDelete = previousTx?.find((t) => t.id === id);
+      const txToDelete = previousTx
+        .flatMap(([, list]) => list ?? [])
+        .find((t) => t.id === id);
 
-      // Optimistically remove transaction
-      if (previousTx) {
-        queryClient.setQueryData<Transaction[]>(
-          financeKeys.transactions.all(),
-          previousTx.filter((t) => t.id !== id),
-        );
-      }
+      queryClient.setQueriesData<Transaction[]>(
+        { queryKey: financeKeys.transactions.all() },
+        (old) => old?.filter((t) => t.id !== id),
+      );
 
       // Optimistically un-pay bill if it was linked
       if (previousBills && txToDelete?.billId) {
@@ -146,41 +122,12 @@ export function useTransactions(filters?: TransactionFilterParams) {
         );
       }
 
-      // Optimistically restore account balance
-      if (previousAccounts && txToDelete) {
-        queryClient.setQueryData<Account[]>(
-          financeKeys.accounts(),
-          previousAccounts.map((acc) => {
-            if (acc.id === txToDelete.accountId) {
-              const change =
-                txToDelete.type === "INCOME"
-                   ? -Number(txToDelete.amount)
-                   : Number(txToDelete.amount);
-              return {
-                ...acc,
-                balance: (Number(acc.balance) + change).toString(),
-              };
-            }
-            return acc;
-          }),
-        );
-      }
-
-      return { previousTx, previousBills, previousAccounts };
+      return { previousTx, previousBills };
     },
     onError: (_err, _id, context) => {
-      if (context?.previousTx)
-        queryClient.setQueryData(
-          financeKeys.transactions.all(),
-          context.previousTx,
-        );
+      restoreTransactions(context?.previousTx);
       if (context?.previousBills)
         queryClient.setQueryData(financeKeys.bills(), context.previousBills);
-      if (context?.previousAccounts)
-        queryClient.setQueryData(
-          financeKeys.accounts(),
-          context.previousAccounts,
-        );
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: financeKeys.all });

@@ -2,24 +2,36 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useTransactions } from './useTransactions';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { financeService } from '@/lib/services/finance-service';
+import { financeKeys } from '../../shared/financeQueries';
+import { Transaction } from '@/types/finance';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
 
 // Vitest will automatically use '@/lib/services/__mocks__/finance-service'
 vi.mock('@/lib/services/finance-service');
 
-const createWrapper = () => {
+const createHarness = () => {
   const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
+    defaultOptions: { queries: { retry: false } },
   });
-  return ({ children }: { children: React.ReactNode }) => (
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
+  return { queryClient, wrapper };
 };
+
+/**
+ * Reads the transaction lists the way the mutations do — by prefix. Asserting
+ * against a hand-written key would let a key mismatch pass, which is how the
+ * optimistic path was silently dead before.
+ */
+const cachedLists = (queryClient: QueryClient) =>
+  queryClient.getQueriesData<Transaction[]>({
+    queryKey: financeKeys.transactions.all(),
+  });
+
+const tx = (over: Partial<Transaction>) =>
+  ({ id: 't1', amount: '100', type: 'EXPENSE', accountId: 'acc_1', ...over }) as Transaction;
 
 describe('useTransactions Hook', () => {
   const mockedService = vi.mocked(financeService);
@@ -29,70 +41,136 @@ describe('useTransactions Hook', () => {
   });
 
   it('should fetch transactions using queryOptions', async () => {
-    const mockData = [{ id: '1', amount: '100', description: 'Test' }] as any;
+    const { wrapper } = createHarness();
+    const mockData = [tx({ description: 'Test' })];
     mockedService.getTransactions.mockResolvedValue(mockData);
 
-    const { result } = renderHook(() => useTransactions(), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderHook(() => useTransactions(), { wrapper });
 
     await waitFor(() => expect(result.current.transactions.isSuccess).toBe(true));
     expect(result.current.transactions.data).toEqual(mockData);
   });
 
+  it('should cache each filter combination under its own key', async () => {
+    const { queryClient, wrapper } = createHarness();
+    mockedService.getTransactions.mockResolvedValue([tx({})]);
+
+    const { result } = renderHook(() => useTransactions({ type: 'INCOME' }), { wrapper });
+    await waitFor(() => expect(result.current.transactions.isSuccess).toBe(true));
+
+    const [[key]] = cachedLists(queryClient);
+    expect(key).toEqual(financeKeys.transactions.list({ type: 'INCOME' }));
+  });
+
   describe('createTransaction Mutation', () => {
-    it('should perform optimistic updates on multiple query keys', async () => {
-      const wrapper = createWrapper();
-      const queryClient = (wrapper({ children: null }) as any).props.client as QueryClient;
+    it('should optimistically insert into every cached filter view', async () => {
+      const { queryClient, wrapper } = createHarness();
+      mockedService.getTransactions.mockResolvedValue([tx({ id: 'existing' })]);
 
-      // Seed initial data
-      const initialAccounts = [{ id: 'acc_1', balance: '1000' }];
-      queryClient.setQueryData(['finance', 'accounts'], initialAccounts);
-      queryClient.setQueryData(['finance', 'transactions'], []);
+      // Populate two filter views the way the app does — via the query, not by
+      // seeding a key by hand.
+      const listAll = renderHook(() => useTransactions(), { wrapper });
+      const listIncome = renderHook(() => useTransactions({ type: 'INCOME' }), { wrapper });
+      await waitFor(() => {
+        expect(listAll.result.current.transactions.isSuccess).toBe(true);
+        expect(listIncome.result.current.transactions.isSuccess).toBe(true);
+      });
+      expect(cachedLists(queryClient)).toHaveLength(2);
 
-      const { result } = renderHook(() => useTransactions(), { wrapper });
+      let resolve!: (value: Transaction) => void;
+      mockedService.createTransaction.mockReturnValue(
+        new Promise<Transaction>((r) => { resolve = r; }),
+      );
 
-      const newTx = {
-        amount: '200',
-        type: 'EXPENSE',
-        accountId: 'acc_1',
-        description: 'New Laptop',
-      } as any;
+      const pending = listAll.result.current.createTransaction.mutateAsync(
+        tx({ id: undefined, description: 'New Laptop' }),
+      );
 
-      mockedService.createTransaction.mockResolvedValue({ id: 'tx_new', ...newTx });
+      // Assert while the request is still in flight — onSettled would otherwise
+      // refetch and mask whether the optimistic write ever landed.
+      await waitFor(() => {
+        for (const [, list] of cachedLists(queryClient)) {
+          expect(list?.[0]?.description).toBe('New Laptop');
+        }
+      });
 
-      await result.current.createTransaction.mutateAsync(newTx);
-
-      // Verify that accounts cache was updated optimistically
-      const updatedAccounts = queryClient.getQueryData<any[]>(['finance', 'accounts']);
-      expect(updatedAccounts?.[0].balance).toBe('800'); // 1000 - 200
-
-      // Verify transaction was added
-      const transactions = queryClient.getQueryData<any[]>(['finance', 'transactions']);
-      expect(transactions).toHaveLength(1);
-      expect(transactions?.[0].description).toBe('New Laptop');
+      resolve(tx({ id: 'tx_new', description: 'New Laptop' }));
+      await pending;
     });
 
-    it('should rollback updates on error', async () => {
-      const wrapper = createWrapper();
-      const queryClient = (wrapper({ children: null }) as any).props.client as QueryClient;
-
-      const initialAccounts = [{ id: 'acc_1', balance: '1000' }];
-      queryClient.setQueryData(['finance', 'accounts'], initialAccounts);
+    it('should roll back every cached view on error', async () => {
+      const { queryClient, wrapper } = createHarness();
+      const initial = [tx({ id: 'existing', description: 'Rent' })];
+      mockedService.getTransactions.mockResolvedValue(initial);
 
       const { result } = renderHook(() => useTransactions(), { wrapper });
+      await waitFor(() => expect(result.current.transactions.isSuccess).toBe(true));
 
       mockedService.createTransaction.mockRejectedValue(new Error('Network Error'));
+      mockedService.getTransactions.mockResolvedValue(initial);
 
-      try {
-        await result.current.createTransaction.mutateAsync({ amount: '200', accountId: 'acc_1', type: 'EXPENSE' } as any);
-      } catch (e) {
-        // Expected
+      await expect(
+        result.current.createTransaction.mutateAsync(tx({ description: 'Doomed' })),
+      ).rejects.toThrow('Network Error');
+
+      for (const [, list] of cachedLists(queryClient)) {
+        expect(list?.some((t) => t.description === 'Doomed')).toBe(false);
       }
+    });
 
-      // Balance should be rolled back to 1000
-      const accounts = queryClient.getQueryData<any[]>(['finance', 'accounts']);
+    it('should not patch account balances optimistically', async () => {
+      const { queryClient, wrapper } = createHarness();
+      mockedService.getTransactions.mockResolvedValue([]);
+      queryClient.setQueryData(financeKeys.accounts(), [{ id: 'acc_1', balance: '1000' }]);
+
+      const { result } = renderHook(() => useTransactions(), { wrapper });
+      await waitFor(() => expect(result.current.transactions.isSuccess).toBe(true));
+
+      let resolve!: (value: Transaction) => void;
+      mockedService.createTransaction.mockReturnValue(
+        new Promise<Transaction>((r) => { resolve = r; }),
+      );
+
+      const pending = result.current.createTransaction.mutateAsync(
+        tx({ amount: '200', type: 'EXPENSE', accountId: 'acc_1' }),
+      );
+
+      // The server owns Decimal arithmetic; the balance must stay untouched
+      // until it answers.
+      const accounts = queryClient.getQueryData<{ balance: string }[]>(financeKeys.accounts());
       expect(accounts?.[0].balance).toBe('1000');
+
+      resolve(tx({ id: 'tx_new' }));
+      await pending;
+    });
+  });
+
+  describe('deleteTransaction Mutation', () => {
+    it('should optimistically remove from every cached filter view', async () => {
+      const { queryClient, wrapper } = createHarness();
+      mockedService.getTransactions.mockResolvedValue([
+        tx({ id: 'doomed' }),
+        tx({ id: 'keeper' }),
+      ]);
+
+      const { result } = renderHook(() => useTransactions(), { wrapper });
+      await waitFor(() => expect(result.current.transactions.isSuccess).toBe(true));
+
+      let resolve!: () => void;
+      mockedService.deleteTransaction.mockReturnValue(
+        new Promise<void>((r) => { resolve = r; }),
+      );
+
+      const pending = result.current.deleteTransaction.mutateAsync('doomed');
+
+      await waitFor(() => {
+        for (const [, list] of cachedLists(queryClient)) {
+          expect(list?.map((t) => t.id)).toEqual(['keeper']);
+        }
+      });
+
+      resolve();
+      await pending;
     });
   });
 });
