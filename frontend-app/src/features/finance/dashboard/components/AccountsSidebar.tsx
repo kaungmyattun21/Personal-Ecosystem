@@ -186,7 +186,7 @@ export const AccountsSidebar = memo(({
         expense={thisMonthExpense} 
       />
 
-      <LowPriorityTip isLoading={isLoading} netGain={netGain} />
+      {/* <LowPriorityTip isLoading={isLoading} netGain={netGain} /> */}
     </aside>
   );
 });
