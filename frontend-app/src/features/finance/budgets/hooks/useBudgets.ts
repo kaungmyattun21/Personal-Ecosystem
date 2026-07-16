@@ -1,13 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { financeService } from "@/lib/services/finance-service";
 import { Budget } from "@/types/finance";
+import { useAuthReady } from "@/features/finance/shared/hooks/useAuthReady";
 
 export function useBudgets() {
   const queryClient = useQueryClient();
+  const authReady = useAuthReady();
 
   const budgets = useQuery({
     queryKey: ["finance", "budgets"],
     queryFn: financeService.getBudgets,
+    enabled: authReady,
   });
 
   const createBudget = useMutation({

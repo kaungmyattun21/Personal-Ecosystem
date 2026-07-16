@@ -2,14 +2,19 @@ import { useQuery, useMutation, useQueryClient, QueryKey } from "@tanstack/react
 import { financeService } from "@/lib/services/finance-service";
 import { Transaction, Bill, TransactionFilterParams } from "@/types/finance";
 import { financeKeys, financeQueries } from "../../shared/financeQueries";
+import { useAuthReady } from "../../shared/hooks/useAuthReady";
 
 
 type TransactionSnapshot = [QueryKey, Transaction[] | undefined][];
 
 export function useTransactions(filters?: TransactionFilterParams) {
   const queryClient = useQueryClient();
+  const authReady = useAuthReady();
 
-  const transactions = useQuery(financeQueries.transactions(filters));
+  const transactions = useQuery({
+    ...financeQueries.transactions(filters),
+    enabled: authReady,
+  });
 
   const snapshotTransactions = (): TransactionSnapshot =>
     queryClient.getQueriesData<Transaction[]>({
