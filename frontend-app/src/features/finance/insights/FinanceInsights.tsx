@@ -62,6 +62,10 @@ export function FinanceInsights() {
 
   const [velocityTab, setVelocityTab] = useState<"daily" | "weekly" | "monthly">("daily");
 
+  // The net-worth figures derive from these queries; until they resolve we show
+  // a skeleton rather than a real "$0.00", which otherwise flashes in first.
+  const isNetWorthLoading = accounts.isLoading || savingGoals.isLoading;
+
   // Calculations for Net Worth Card
   const actualBalance = useMemo(() => {
     return accounts.data?.reduce((acc, curr) => acc + parseFloat(curr.balance), 0) || 0;
@@ -219,14 +223,18 @@ export function FinanceInsights() {
               <span className="text-[10px] font-bold font-sans uppercase tracking-[0.2em] text-[#042727]/60 dark:text-zinc-500 block mb-2">
                 Current Net Worth
               </span>
-              <div className="flex items-baseline">
-                <span className="text-4xl font-extrabold font-display tracking-tight text-[#042727] dark:text-white leading-none">
-                  ${integerPart}
-                </span>
-                <span className="text-2xl font-bold font-display text-[#042727]/60 dark:text-white/60 leading-none">
-                  .{decimalPart}
-                </span>
-              </div>
+              {isNetWorthLoading ? (
+                <div className="h-9 w-48 rounded-xl bg-zinc-200/70 dark:bg-white/10 animate-pulse" />
+              ) : (
+                <div className="flex items-baseline">
+                  <span className="text-4xl font-extrabold font-display tracking-tight text-[#042727] dark:text-white leading-none">
+                    ${integerPart}
+                  </span>
+                  <span className="text-2xl font-bold font-display text-[#042727]/60 dark:text-white/60 leading-none">
+                    .{decimalPart}
+                  </span>
+                </div>
+              )}
               <div className="flex items-center gap-1.5 mt-3">
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#74f6ce]/30 text-[#10b981] dark:bg-emerald-950/30 dark:text-emerald-400">
                   <ArrowUpRight size={10} strokeWidth={3} />
@@ -245,20 +253,28 @@ export function FinanceInsights() {
               <span className="text-[9px] font-bold text-[#042727]/60 dark:text-zinc-500 uppercase tracking-widest block">
                 Total Savings
               </span>
-              <span className="text-lg font-black font-mono text-[#10b981] dark:text-emerald-400">
-                ${totalSavings.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-              </span>
-              <div className="h-[2px] w-12 bg-[#10b981] mt-2" />
+              {isNetWorthLoading ? (
+                <div className="h-6 w-24 rounded-lg bg-zinc-200/70 dark:bg-white/10 animate-pulse" />
+              ) : (
+                <span className="text-lg font-black font-mono text-brand-emerald dark:text-emerald-400">
+                  ${totalSavings.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                </span>
+              )}
+              <div className="h-0.5 w-12 bg-brand-emerald mt-2" />
             </div>
 
             <div className="space-y-1">
               <span className="text-[9px] font-bold text-[#042727]/60 dark:text-zinc-500 uppercase tracking-widest block">
                 Spendable Cash
               </span>
-              <span className="text-lg font-black font-mono text-[#042727] dark:text-white">
-                ${spendableCash.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-              </span>
-              <div className="h-[2px] w-12 bg-[#042727] dark:bg-white/40 mt-2" />
+              {isNetWorthLoading ? (
+                <div className="h-6 w-24 rounded-lg bg-zinc-200/70 dark:bg-white/10 animate-pulse" />
+              ) : (
+                <span className="text-lg font-black font-mono text-[#042727] dark:text-white">
+                  ${spendableCash.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                </span>
+              )}
+              <div className="h-0.5 w-12 bg-[#042727] dark:bg-white/40 mt-2" />
             </div>
           </div>
         </Card>
@@ -274,8 +290,8 @@ export function FinanceInsights() {
             </p>
           </div>
 
-          <div className="h-[140px] w-full relative flex items-center justify-center my-4">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-35 w-full relative flex items-center justify-center my-4">
+            <ResponsiveContainer width="100%" height={140}>
               <PieChart>
                 <Pie
                   data={pieData.length ? pieData : [{ name: "No Spending", value: 1 }]}
@@ -396,8 +412,8 @@ export function FinanceInsights() {
           </div>
         </div>
 
-        <div className="h-[280px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="h-70 w-full">
+          <ResponsiveContainer width="100%" height={280}>
             <BarChart data={barData} barGap={4}>
               <CartesianGrid strokeDasharray="6 6" vertical={false} strokeOpacity={0.03} />
               <XAxis
@@ -439,11 +455,11 @@ export function FinanceInsights() {
 
         <div className="flex justify-center gap-6 mt-6 pt-4 border-t border-zinc-150/15 dark:border-zinc-800">
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#10b981]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-brand-emerald" />
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Income</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#ef4444]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-brand-red" />
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Expense</span>
           </div>
         </div>

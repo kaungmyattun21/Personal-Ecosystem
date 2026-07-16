@@ -74,11 +74,14 @@ export default function FinanceView() {
           fallback={<Card className="h-96 w-full animate-pulse" />}
         >
           <TabsContent value="overview" className="space-y-8 outline-none">
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
-              <div className="md:col-span-1 lg:col-span-7">
-                <FinanceInsights />
+            
+            {activeTab === "overview" && (
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
+                <div className="md:col-span-1 lg:col-span-7">
+                  <FinanceInsights />
+                </div>
               </div>
-            </div>
+            )}
           </TabsContent>
 
           <TabsContent value="transactions" className="outline-none space-y-6">

@@ -20,11 +20,6 @@ const createHarness = () => {
   return { queryClient, wrapper };
 };
 
-/**
- * Reads the transaction lists the way the mutations do — by prefix. Asserting
- * against a hand-written key would let a key mismatch pass, which is how the
- * optimistic path was silently dead before.
- */
 const cachedLists = (queryClient: QueryClient) =>
   queryClient.getQueriesData<Transaction[]>({
     queryKey: financeKeys.transactions.all(),
