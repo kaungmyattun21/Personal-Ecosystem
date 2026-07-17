@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NEXT_PUBLIC_API_URL } from "@/lib/env";
@@ -26,8 +26,10 @@ import {
   User,
 } from "lucide-react";
 
-export default function Register() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -56,7 +58,7 @@ export default function Register() {
       if (res?.error) {
         setError("Registration succeeded but login failed.");
       } else {
-        router.push("/dashboard");
+        router.push(callbackUrl);
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -70,7 +72,7 @@ export default function Register() {
   };
 
   const handleGoogleSignIn = () => {
-    signIn("google", { callbackUrl: "/dashboard" });
+    signIn("google", { callbackUrl });
   };
 
   return (
@@ -242,5 +244,13 @@ export default function Register() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function Register() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   );
 }

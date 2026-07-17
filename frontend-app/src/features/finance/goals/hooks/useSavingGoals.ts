@@ -1,13 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { financeService } from "@/lib/services/finance-service";
 import { SavingGoal } from "@/types/finance";
+import { useAuthReady } from "@/lib/hooks/useAuthReady";
 
 export function useSavingGoals() {
   const queryClient = useQueryClient();
+  const authReady = useAuthReady();
 
   const savingGoals = useQuery({
     queryKey: ["finance", "goals"],
     queryFn: financeService.getSavingGoals,
+    enabled: authReady,
   });
 
   const createSavingGoal = useMutation({

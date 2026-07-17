@@ -2,11 +2,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { kitchenService } from "@/lib/services/kitchen-service";
 import { CreateShoppingListInput, UpdateShoppingListInput, ShoppingList } from "@/types/kitchen";
 import { kitchenKeys, kitchenQueries } from "../../shared/kitchenQueries";
+import { useAuthReady } from "@/lib/hooks/useAuthReady";
 
 export function useShoppingList() {
   const queryClient = useQueryClient();
+  const authReady = useAuthReady();
 
-  const shoppingLists = useQuery(kitchenQueries.shoppingLists());
+  const shoppingLists = useQuery({ ...kitchenQueries.shoppingLists(), enabled: authReady });
 
   const createShoppingList = useMutation({
     mutationFn: (list: CreateShoppingListInput) => kitchenService.createShoppingList(list),

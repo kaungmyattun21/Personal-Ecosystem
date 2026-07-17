@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,8 +23,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function Home() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +46,7 @@ export default function Home() {
       } else {
         // Handle success (e.g., redirect to dashboard)
         console.log("Login Success");
-        router.push("/dashboard");
+        router.push(callbackUrl);
       }
     } finally {
       setIsLoading(false);
@@ -52,7 +54,7 @@ export default function Home() {
   };
 
   const handleGoogleSignIn = () => {
-    signIn("google", { callbackUrl: "/dashboard" });
+    signIn("google", { callbackUrl });
   };
 
   return (
@@ -202,5 +204,13 @@ export default function Home() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -111,4 +111,5 @@ export interface TransactionFilterParams {
   categoryId?: string;
   fromDate?: string;
   toDate?: string;
+  [key: string]: string | undefined;
 }

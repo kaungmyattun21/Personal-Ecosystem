@@ -2,9 +2,21 @@ import { NEXT_PUBLIC_API_URL } from "./env";
 
 // Set by <AuthTokenSync /> on every session change — no network calls needed.
 let _token: string | null = null;
+const _tokenListeners = new Set<() => void>();
 
 export function setAuthToken(token: string | null) {
+  if (token === _token) return;
   _token = token;
+  _tokenListeners.forEach((fn) => fn());
+}
+
+export function getAuthToken(): string | null {
+  return _token;
+}
+
+export function subscribeAuthToken(listener: () => void): () => void {
+  _tokenListeners.add(listener);
+  return () => _tokenListeners.delete(listener);
 }
 
 type ApiFetchOptions = Omit<RequestInit, "body"> & {
