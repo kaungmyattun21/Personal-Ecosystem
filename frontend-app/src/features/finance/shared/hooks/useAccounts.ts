@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { financeQueries } from "../financeQueries";
-import { useAuthReady } from "./useAuthReady";
+import { useAuthReady } from "@/lib/hooks/useAuthReady";
 
 export function useAccounts() {
   const authReady = useAuthReady();

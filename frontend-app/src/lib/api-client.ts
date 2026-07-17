@@ -14,7 +14,6 @@ export function getAuthToken(): string | null {
   return _token;
 }
 
-/** Subscribe to token changes. Returns an unsubscribe fn (useSyncExternalStore shape). */
 export function subscribeAuthToken(listener: () => void): () => void {
   _tokenListeners.add(listener);
   return () => _tokenListeners.delete(listener);

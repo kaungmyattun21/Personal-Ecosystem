@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient, QueryKey } from "@tanstack/react
 import { financeService } from "@/lib/services/finance-service";
 import { Transaction, Bill, TransactionFilterParams } from "@/types/finance";
 import { financeKeys, financeQueries } from "../../shared/financeQueries";
-import { useAuthReady } from "../../shared/hooks/useAuthReady";
+import { useAuthReady } from "@/lib/hooks/useAuthReady";
 
 
 type TransactionSnapshot = [QueryKey, Transaction[] | undefined][];

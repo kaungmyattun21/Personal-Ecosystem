@@ -2,11 +2,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { kitchenService } from "@/lib/services/kitchen-service";
 import { CreateMealPlanInput, UpdateMealPlanInput, MealPlan } from "@/types/kitchen";
 import { kitchenKeys, kitchenQueries } from "../../shared/kitchenQueries";
+import { useAuthReady } from "@/lib/hooks/useAuthReady";
 
 export function useMealPlan() {
   const queryClient = useQueryClient();
+  const authReady = useAuthReady();
 
-  const mealPlans = useQuery(kitchenQueries.mealPlans());
+  const mealPlans = useQuery({ ...kitchenQueries.mealPlans(), enabled: authReady });
 
   const createMealPlan = useMutation({
     mutationFn: (plan: CreateMealPlanInput) => kitchenService.createMealPlan(plan),

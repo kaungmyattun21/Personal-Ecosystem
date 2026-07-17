@@ -2,11 +2,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { kitchenService } from "@/lib/services/kitchen-service";
 import { CreateGroceryItemInput, UpdateGroceryItemInput, GroceryItem } from "@/types/kitchen";
 import { kitchenKeys, kitchenQueries } from "../../shared/kitchenQueries";
+import { useAuthReady } from "@/lib/hooks/useAuthReady";
 
 export function useGroceries() {
   const queryClient = useQueryClient();
+  const authReady = useAuthReady();
 
-  const groceryItems = useQuery(kitchenQueries.groceryItems());
+  const groceryItems = useQuery({ ...kitchenQueries.groceryItems(), enabled: authReady });
 
   const addGroceryItem = useMutation({
     mutationFn: (item: CreateGroceryItemInput) => kitchenService.addGroceryItem(item),

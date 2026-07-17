@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { financeService } from "@/lib/services/finance-service";
 import { Bill } from "@/types/finance";
-import { useAuthReady } from "@/features/finance/shared/hooks/useAuthReady";
+import { useAuthReady } from "@/lib/hooks/useAuthReady";
 
 export function useBills() {
   const queryClient = useQueryClient();
