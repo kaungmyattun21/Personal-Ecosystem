@@ -74,12 +74,10 @@ export function useTransactionForm(): TransactionFormContext {
     if (isEditMode && editingTransaction) {
       form.reset(mapTransactionToFormValues(editingTransaction));
     } else if (!isEditMode) {
-      const defaultValues = { ...CREATE_DEFAULTS };
-      // If we have accounts, pre-select the first one if current accountId is empty
-      if (accounts.data && accounts.data.length > 0 && !form.getValues("accountId")) {
-        defaultValues.accountId = accounts.data[0].id;
-      }
-      form.reset(defaultValues);
+      form.reset({
+        ...CREATE_DEFAULTS,
+        accountId: accounts.data?.[0]?.id ?? CREATE_DEFAULTS.accountId,
+      });
     }
   }, [isOpen, isEditMode, editingTransaction, form, accounts.data]);
 
