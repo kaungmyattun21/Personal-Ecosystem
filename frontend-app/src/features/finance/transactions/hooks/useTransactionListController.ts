@@ -6,6 +6,8 @@ import { Transaction } from "@/types/finance";
 import { useConfirm } from "@/providers/confirm-provider";
 import { toast } from "sonner";
 import { useTransactions } from "./useTransactions";
+import { useCategories } from "@/features/finance/shared/hooks/useCategories";
+import { SelectOption } from "@/components/ui/app-select";
 
 export type SortKey = "description" | "account" | "date" | "amount" | "type";
 export type SortDir = "asc" | "desc";
@@ -35,8 +37,19 @@ export function useTransactionListController(options: UseTransactionListOptions 
   }), [search, filterType, categoryFilter, dateFilter]);
 
   const { transactions, deleteTransaction, bulkDeleteTransactions } = useTransactions(filters);
+  const { categories } = useCategories();
   const dispatch = useDispatch();
   const { confirm } = useConfirm();
+
+  const categoryOptions = useMemo<SelectOption[]>(
+    () =>
+      (categories.data || []).map((cat) => ({
+        id: cat.id,
+        label: cat.name,
+        color: cat.color || "#ccc",
+      })),
+    [categories.data],
+  );
 
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
@@ -179,6 +192,7 @@ export function useTransactionListController(options: UseTransactionListOptions 
     setFilterType,
     categoryFilter,
     setCategoryFilter,
+    categoryOptions,
     dateFilter,
     setDateFilter,
     sortKey,

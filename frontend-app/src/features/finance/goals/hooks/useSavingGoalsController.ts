@@ -1,6 +1,6 @@
 "use client";
 
-import { useSavingGoals } from "./hooks/useSavingGoals";
+import { useSavingGoals } from "./useSavingGoals";
 import { useDispatch } from "react-redux";
 import { openEditSavingGoal, setAddSavingGoalModalOpen } from "@/lib/store/features/finance/finance-slice";
 import { toast } from "sonner";

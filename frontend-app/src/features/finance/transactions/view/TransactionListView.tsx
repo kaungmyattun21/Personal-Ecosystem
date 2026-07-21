@@ -161,6 +161,7 @@ export function TransactionListView({ limit, title }: TransactionListViewProps) 
             onFilterTypeChange={ctrl.setFilterType}
             categoryFilter={ctrl.categoryFilter}
             onCategoryFilterChange={ctrl.setCategoryFilter}
+            categoryOptions={ctrl.categoryOptions}
             dateFilter={ctrl.dateFilter}
             onDateFilterChange={ctrl.setDateFilter}
             selectedCount={ctrl.selectedIds.length}
