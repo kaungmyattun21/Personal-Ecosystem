@@ -1,16 +1,16 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Filter, Calendar, X, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { FilterType } from "../hooks/useTransactionListController";
 import { AppSelect, SelectOption } from "@/components/ui/app-select";
-import { useCategories } from "../../shared/hooks/useCategories";
 
 interface TransactionFiltersProps {
   filterType: FilterType;
   onFilterTypeChange: (type: FilterType) => void;
   categoryFilter: string;
   onCategoryFilterChange: (id: string) => void;
+  categoryOptions: SelectOption[];
   dateFilter: { from: string; to: string };
   onDateFilterChange: (filter: { from: string; to: string }) => void;
   selectedCount: number;
@@ -23,6 +23,7 @@ export function TransactionFilters({
   onFilterTypeChange,
   categoryFilter,
   onCategoryFilterChange,
+  categoryOptions,
   dateFilter,
   onDateFilterChange,
   selectedCount,
@@ -42,17 +43,6 @@ export function TransactionFilters({
       {label}
     </button>
   );
-
-  const { categories } = useCategories();
-
-  const categoryOptions = useMemo(() => {
-    const options: SelectOption[] = (categories.data || []).map((cat) => ({
-      id: cat.id,
-      label: cat.name,
-      color: cat.color || "#ccc",
-    }));
-    return options;
-  }, [categories.data]);
 
   return (
     <div className="px-8 py-6 border-none flex flex-col gap-4">

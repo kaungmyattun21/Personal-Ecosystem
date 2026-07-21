@@ -1,6 +1,6 @@
 "use client";
 
-import { SavingGoalsView } from "@/features/finance/goals/SavingGoalsView";
+import { SavingGoalsView } from "@/features/finance/goals/view/SavingGoalsView";
 
 export function SavingGoalsTracker() {
   return (

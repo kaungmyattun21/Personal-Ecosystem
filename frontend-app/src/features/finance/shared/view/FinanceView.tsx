@@ -13,7 +13,7 @@ import { ActionFAB } from "@/features/finance/shared/components/ActionFAB";
 import { AddTransactionForm } from "@/features/finance/transactions/components/AddTransactionForm";
 import { AddBudgetForm } from "@/features/finance/budgets/components/AddBudgetForm";
 import { AddBillForm } from "@/features/finance/bills/components/AddBillForm";
-import { AddSavingGoalForm } from "@/features/finance/goals/AddSavingGoalForm";
+import { AddSavingGoalForm } from "@/features/finance/goals/components/AddSavingGoalForm";
 import { SavingGoalsTracker } from "@/features/finance/goals/components/SavingGoalsTracker";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Wallet, BarChart3, Receipt, Calendar, Target } from "lucide-react";

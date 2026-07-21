@@ -1,6 +1,6 @@
 "use client";
 
-import { useSavingGoalsController } from "./useSavingGoalsController";
+import { useSavingGoalsController } from "../hooks/useSavingGoalsController";
 import { useState } from "react";
 import { 
   Target, 
