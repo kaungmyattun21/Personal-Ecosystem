@@ -24,18 +24,18 @@ export async function findAccountById(id: string, userId: string, tx?: any) {
   });
 }
 
-export async function updateAccount(id: string, data: any, tx?: any) {
+export async function updateAccount(id: string, userId: string, data: any, tx?: any) {
   const db = tx || prisma;
-  return db.account.update({
-    where: { id },
+  return db.account.updateMany({
+    where: { id, userId },
     data,
   });
 }
 
-export async function deleteAccount(id: string, tx?: any) {
+export async function deleteAccount(id: string, userId: string, tx?: any) {
   const db = tx || prisma;
-  return db.account.delete({
-    where: { id },
+  return db.account.deleteMany({
+    where: { id, userId },
   });
 }
 
@@ -62,18 +62,18 @@ export async function findCategoryById(id: string, userId: string, tx?: any) {
   });
 }
 
-export async function updateCategory(id: string, data: any, tx?: any) {
+export async function updateCategory(id: string, userId: string, data: any, tx?: any) {
   const db = tx || prisma;
-  return db.category.update({
-    where: { id },
+  return db.category.updateMany({
+    where: { id, userId },
     data,
   });
 }
 
-export async function deleteCategory(id: string, tx?: any) {
+export async function deleteCategory(id: string, userId: string, tx?: any) {
   const db = tx || prisma;
-  return db.category.delete({
-    where: { id },
+  return db.category.deleteMany({
+    where: { id, userId },
   });
 }
 
@@ -121,18 +121,18 @@ export async function findTransactions(conditions: Prisma.TransactionWhereInput,
   });
 }
 
-export async function updateTransaction(id: string, data: any, tx?: any) {
+export async function updateTransaction(id: string, userId: string, data: any, tx?: any) {
   const db = tx || prisma;
-  return db.transaction.update({
-    where: { id },
+  return db.transaction.updateMany({
+    where: { id, userId },
     data,
   });
 }
 
-export async function deleteTransaction(id: string, tx?: any) {
+export async function deleteTransaction(id: string, userId: string, tx?: any) {
   const db = tx || prisma;
-  return db.transaction.delete({
-    where: { id },
+  return db.transaction.deleteMany({
+    where: { id, userId },
   });
 }
 
@@ -184,18 +184,18 @@ export async function findBudgets(conditions: Prisma.BudgetWhereInput, tx?: any)
   });
 }
 
-export async function updateBudget(id: string, data: any, tx?: any) {
+export async function updateBudget(id: string, userId: string, data: any, tx?: any) {
   const db = tx || prisma;
-  return db.budget.update({
-    where: { id },
+  return db.budget.updateMany({
+    where: { id, userId },
     data,
   });
 }
 
-export async function deleteBudget(id: string, tx?: any) {
+export async function deleteBudget(id: string, userId: string, tx?: any) {
   const db = tx || prisma;
-  return db.budget.delete({
-    where: { id },
+  return db.budget.deleteMany({
+    where: { id, userId },
   });
 }
 
@@ -242,18 +242,18 @@ export async function findBillById(id: string, userId: string, tx?: any) {
   });
 }
 
-export async function updateBill(id: string, data: any, tx?: any) {
+export async function updateBill(id: string, userId: string, data: any, tx?: any) {
   const db = tx || prisma;
-  return db.bill.update({
-    where: { id },
+  return db.bill.updateMany({
+    where: { id, userId },
     data,
   });
 }
 
-export async function deleteBill(id: string, tx?: any) {
+export async function deleteBill(id: string, userId: string, tx?: any) {
   const db = tx || prisma;
-  return db.bill.delete({
-    where: { id },
+  return db.bill.deleteMany({
+    where: { id, userId },
   });
 }
 
@@ -282,18 +282,18 @@ export async function findSavingGoalById(id: string, userId: string, tx?: any) {
   });
 }
 
-export async function updateSavingGoal(id: string, data: any, tx?: any) {
+export async function updateSavingGoal(id: string, userId: string, data: any, tx?: any) {
   const db = tx || prisma;
-  return db.savingGoal.update({
-    where: { id },
+  return db.savingGoal.updateMany({
+    where: { id, userId },
     data,
   });
 }
 
-export async function deleteSavingGoal(id: string, tx?: any) {
+export async function deleteSavingGoal(id: string, userId: string, tx?: any) {
   const db = tx || prisma;
-  return db.savingGoal.delete({
-    where: { id },
+  return db.savingGoal.deleteMany({
+    where: { id, userId },
   });
 }
 

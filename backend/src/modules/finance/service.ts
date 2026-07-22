@@ -4,6 +4,30 @@ import { seedDefaultCategories } from "../auth/seedCategories.js";
 import { TransactionFilterParams } from "./types.js";
 import { buildTransactionQuery } from "./utils/transactionFilters.js";
 
+async function assertOwnedAccount(userId: string, accountId: string, tx?: any) {
+  if (!(await repo.findAccountById(accountId, userId, tx))) {
+    throw new AppError("Account not found", 404);
+  }
+}
+
+async function assertOwnedCategory(userId: string, categoryId: string, tx?: any) {
+  if (!(await repo.findCategoryById(categoryId, userId, tx))) {
+    throw new AppError("Category not found", 404);
+  }
+}
+
+async function assertOwnedBudget(userId: string, budgetId: string, tx?: any) {
+  if (!(await repo.findBudgetById(budgetId, userId, tx))) {
+    throw new AppError("Budget not found", 404);
+  }
+}
+
+async function assertOwnedBill(userId: string, billId: string, tx?: any) {
+  if (!(await repo.findBillById(billId, userId, tx))) {
+    throw new AppError("Bill not found", 404);
+  }
+}
+
 // --- Accounts ---
 export async function createAccount(userId: string, data: any) {
   return repo.createAccount(userId, data);
@@ -27,12 +51,12 @@ export async function updateAccount(
   data: any,
 ) {
   await getAccount(userId, accountId); // Verify ownership/existence
-  return repo.updateAccount(accountId, data);
+  return repo.updateAccount(accountId, userId, data);
 }
 
 export async function deleteAccount(userId: string, accountId: string) {
   await getAccount(userId, accountId); // Verify ownership/existence
-  return repo.deleteAccount(accountId);
+  return repo.deleteAccount(accountId, userId);
 }
 
 // --- Categories ---
@@ -63,12 +87,12 @@ export async function updateCategory(
   data: any,
 ) {
   await getCategory(userId, categoryId); // Verify ownership/existence
-  return repo.updateCategory(categoryId, data);
+  return repo.updateCategory(categoryId, userId, data);
 }
 
 export async function deleteCategory(userId: string, categoryId: string) {
   await getCategory(userId, categoryId); // Verify ownership/existence
-  return repo.deleteCategory(categoryId);
+  return repo.deleteCategory(categoryId, userId);
 }
 
 // --- Transactions ---
@@ -90,10 +114,16 @@ export async function createTransaction(userId: string, data: any) {
         }, tx);
         accountId = defaultAccount.id;
       }
+    } else {
+      await assertOwnedAccount(userId, accountId, tx);
     }
+
+    if (data.categoryId) await assertOwnedCategory(userId, data.categoryId, tx);
+    if (data.billId) await assertOwnedBill(userId, data.billId, tx);
 
     // Auto-link budget if unassigned and expense matches a unique budget for the category
     let budgetId = data.budgetId;
+    if (budgetId) await assertOwnedBudget(userId, budgetId, tx);
     if (data.type === "EXPENSE" && !budgetId && data.categoryId) {
       const matchedBudgets = await repo.findBudgets({
         userId,
@@ -120,7 +150,7 @@ export async function createTransaction(userId: string, data: any) {
     }
 
     // Update Account Balance
-    await repo.updateAccount(accountId, {
+    await repo.updateAccount(accountId, userId, {
       balance: {
         increment: balanceChange,
       },
@@ -128,7 +158,7 @@ export async function createTransaction(userId: string, data: any) {
 
     // Update Budget Spent Balance (only for Expenses)
     if (budgetId && data.type === "EXPENSE") {
-      await repo.updateBudget(budgetId, {
+      await repo.updateBudget(budgetId, userId, {
         spent: {
           increment: amountValue,
         },
@@ -136,7 +166,7 @@ export async function createTransaction(userId: string, data: any) {
     }
 
     if (data.billId) {
-      await repo.updateBill(data.billId, { status: "PAID" }, tx);
+      await repo.updateBill(data.billId, userId, { status: "PAID" }, tx);
     }
 
     return transaction;
@@ -171,12 +201,17 @@ export async function updateTransaction(
       throw new AppError("Transaction not found", 404);
     }
 
+    if (data.accountId !== undefined) await assertOwnedAccount(userId, data.accountId, tx);
+    if (data.categoryId) await assertOwnedCategory(userId, data.categoryId, tx);
+    if (data.budgetId) await assertOwnedBudget(userId, data.budgetId, tx);
+    if (data.billId) await assertOwnedBill(userId, data.billId, tx);
+
     const updateData = { ...data };
     if (updateData.date) {
       updateData.date = new Date(updateData.date);
     }
 
-    const transaction = await repo.updateTransaction(transactionId, { ...updateData, userId }, tx);
+    await repo.updateTransaction(transactionId, userId, updateData, tx);
 
     // --- Balance Calculation Variables ---
     const oldAmount = Number(existing.amount);
@@ -200,14 +235,14 @@ export async function updateTransaction(
       const diff = newImpact - oldImpact;
 
       if (diff !== 0) {
-        await repo.updateAccount(oldAccountId, { balance: { increment: diff } }, tx);
+        await repo.updateAccount(oldAccountId, userId, { balance: { increment: diff } }, tx);
       }
     } else {
       const oldImpact = getBalanceImpact(oldType, oldAmount);
       const newImpact = getBalanceImpact(newType, newAmount);
 
-      await repo.updateAccount(oldAccountId, { balance: { decrement: oldImpact } }, tx);
-      await repo.updateAccount(newAccountId, { balance: { increment: newImpact } }, tx);
+      await repo.updateAccount(oldAccountId, userId, { balance: { decrement: oldImpact } }, tx);
+      await repo.updateAccount(newAccountId, userId, { balance: { increment: newImpact } }, tx);
     }
 
     // Handle Budget Spent Balance updates
@@ -220,25 +255,25 @@ export async function updateTransaction(
         const newImpact = newType === "EXPENSE" ? newAmount : 0;
         const diff = newImpact - oldImpact;
         if (diff !== 0) {
-          await repo.updateBudget(oldBudgetId, { spent: { increment: diff } }, tx);
+          await repo.updateBudget(oldBudgetId, userId, { spent: { increment: diff } }, tx);
         }
       }
     } else {
       if (oldBudgetId && oldType === "EXPENSE") {
-        await repo.updateBudget(oldBudgetId, { spent: { decrement: oldAmount } }, tx);
+        await repo.updateBudget(oldBudgetId, userId, { spent: { decrement: oldAmount } }, tx);
       }
       if (newBudgetId && newType === "EXPENSE") {
-        await repo.updateBudget(newBudgetId, { spent: { increment: newAmount } }, tx);
+        await repo.updateBudget(newBudgetId, userId, { spent: { increment: newAmount } }, tx);
       }
     }
 
     if (data.billId !== undefined && data.billId !== existing.billId) {
       if (data.billId) {
-        await repo.updateBill(data.billId, { status: "PAID" }, tx);
+        await repo.updateBill(data.billId, userId, { status: "PAID" }, tx);
       }
     }
 
-    return transaction;
+    return repo.findTransactionById(transactionId, userId, tx);
   });
 }
 
@@ -249,8 +284,7 @@ export async function deleteTransaction(userId: string, transactionId: string) {
       throw new AppError("Transaction not found", 404);
     }
 
-    // Delete transaction and save the result to return later
-    const deletedTransaction = await repo.deleteTransaction(transactionId, tx);
+    await repo.deleteTransaction(transactionId, userId, tx);
 
     // Another approach: Recalculate balance from all remaining transactions to avoid delta drift/sign issues
     const remainingTransactions = await repo.findTransactions({ accountId: existing.accountId }, tx);
@@ -260,7 +294,7 @@ export async function deleteTransaction(userId: string, transactionId: string) {
       return t.type === "INCOME" ? acc + amt : acc - amt;
     }, 0);
 
-    await repo.updateAccount(existing.accountId, { balance: newBalance }, tx);
+    await repo.updateAccount(existing.accountId, userId, { balance: newBalance }, tx);
 
     // Recalculate budget balance if transaction was linked to one
     if (existing.budgetId) {
@@ -269,10 +303,10 @@ export async function deleteTransaction(userId: string, transactionId: string) {
         (acc: number, t: any) => acc + Number(t.amount),
         0,
       );
-      await repo.updateBudget(existing.budgetId, { spent: newSpent }, tx);
+      await repo.updateBudget(existing.budgetId, userId, { spent: newSpent }, tx);
     }
 
-    return deletedTransaction;
+    return existing;
   });
 }
 
@@ -307,7 +341,7 @@ export async function bulkDeleteTransactions(
         const amt = Number(t.amount);
         return t.type === "INCOME" ? acc + amt : acc - amt;
       }, 0);
-      await repo.updateAccount(accountId, { balance: newBalance }, tx);
+      await repo.updateAccount(accountId, userId, { balance: newBalance }, tx);
     }
 
     // 4. Re-calculate Budget Spent
@@ -317,7 +351,7 @@ export async function bulkDeleteTransactions(
         (acc: number, t: any) => acc + Number(t.amount),
         0,
       );
-      await repo.updateBudget(budgetId, { spent: newSpent }, tx);
+      await repo.updateBudget(budgetId, userId, { spent: newSpent }, tx);
     }
   });
 }
@@ -457,7 +491,7 @@ export async function updateBudget(
     updateData.startDate = new Date(updateData.startDate);
   if (updateData.endDate) updateData.endDate = new Date(updateData.endDate);
 
-  return repo.updateBudget(budgetId, updateData);
+  return repo.updateBudget(budgetId, userId, updateData);
 }
 
 export async function deleteBudget(userId: string, budgetId: string) {
@@ -465,7 +499,7 @@ export async function deleteBudget(userId: string, budgetId: string) {
   if (!existing) {
     throw new AppError("Budget not found", 404);
   }
-  return repo.deleteBudget(budgetId);
+  return repo.deleteBudget(budgetId, userId);
 }
 
 // --- Bills ---
@@ -489,7 +523,7 @@ export async function updateBill(userId: string, billId: string, data: any) {
   const updateData = { ...data };
   if (updateData.dueDate) updateData.dueDate = new Date(updateData.dueDate);
 
-  return repo.updateBill(billId, updateData);
+  return repo.updateBill(billId, userId, updateData);
 }
 
 export async function deleteBill(userId: string, billId: string) {
@@ -497,7 +531,7 @@ export async function deleteBill(userId: string, billId: string) {
   if (!existing) {
     throw new AppError("Bill not found", 404);
   }
-  return repo.deleteBill(billId);
+  return repo.deleteBill(billId, userId);
 }
 
 // --- Saving Goals ---
@@ -523,12 +557,12 @@ export async function updateSavingGoal(
   data: any,
 ) {
   await getSavingGoal(userId, goalId);
-  return repo.updateSavingGoal(goalId, data);
+  return repo.updateSavingGoal(goalId, userId, data);
 }
 
 export async function deleteSavingGoal(userId: string, goalId: string) {
   await getSavingGoal(userId, goalId);
-  return repo.deleteSavingGoal(goalId);
+  return repo.deleteSavingGoal(goalId, userId);
 }
 
 // --- Saving Contributions ---
@@ -548,7 +582,7 @@ export async function createSavingContribution(userId: string, data: any) {
     const newCurrentAmount = Number(goal.currentAmount) + amountValue;
     const reached = newCurrentAmount >= Number(goal.targetAmount);
 
-    await repo.updateSavingGoal(data.savingGoalId, {
+    await repo.updateSavingGoal(data.savingGoalId, userId, {
       currentAmount: newCurrentAmount,
       status: reached ? "REACHED" : goal.status,
     }, tx);

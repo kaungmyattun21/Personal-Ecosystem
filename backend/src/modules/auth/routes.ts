@@ -19,6 +19,8 @@ router.post(
   controller.refresh,
 );
 
+router.post("/logout", authMiddleware, controller.logout);
+
 router.get("/me", authMiddleware, controller.getMe);
 
 export default router;

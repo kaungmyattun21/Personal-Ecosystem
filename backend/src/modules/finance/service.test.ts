@@ -30,25 +30,48 @@ describe("Finance Service", () => {
   describe("Transactions", () => {
     it("should create a transaction and update account balance", async () => {
       const data = { amount: 100, type: "INCOME", accountId: "acc_1" };
+      mockedRepo.findAccountById.mockResolvedValue({ id: "acc_1", userId } as any);
       mockedRepo.createTransaction.mockResolvedValue({ id: "tx_1" } as any);
-      
+
       await service.createTransaction(userId, data);
-      
+
       expect(mockedRepo.createTransaction).toHaveBeenCalled();
-      expect(mockedRepo.updateAccount).toHaveBeenCalledWith("acc_1", expect.objectContaining({
+      expect(mockedRepo.updateAccount).toHaveBeenCalledWith("acc_1", userId, expect.objectContaining({
         balance: { increment: 100 }
       }), mockTx);
+    });
+
+    it("should reject a transaction referencing an account the user does not own", async () => {
+      const data = { amount: 100, type: "INCOME", accountId: "someone_elses_acc" };
+      mockedRepo.findAccountById.mockResolvedValue(null);
+
+      await expect(service.createTransaction(userId, data)).rejects.toThrow(
+        "Account not found",
+      );
+      expect(mockedRepo.updateAccount).not.toHaveBeenCalled();
+      expect(mockedRepo.createTransaction).not.toHaveBeenCalled();
     });
 
     it("should delete and recalculate account balance", async () => {
       const existingTx = { id: "tx_1", userId, amount: 100, type: "INCOME", accountId: "acc_1" };
       mockedRepo.findTransactionById.mockResolvedValue(existingTx as any);
       mockedRepo.findTransactions.mockResolvedValue([]);
-      
+
       await service.deleteTransaction(userId, "tx_1");
-      
-      expect(mockedRepo.deleteTransaction).toHaveBeenCalledWith("tx_1", mockTx);
-      expect(mockedRepo.updateAccount).toHaveBeenCalledWith("acc_1", { balance: 0 }, mockTx);
+
+      expect(mockedRepo.deleteTransaction).toHaveBeenCalledWith("tx_1", userId, mockTx);
+      expect(mockedRepo.updateAccount).toHaveBeenCalledWith("acc_1", userId, { balance: 0 }, mockTx);
+    });
+
+    it("should reject reassigning a transaction to an account the user does not own", async () => {
+      const existingTx = { id: "tx_1", userId, amount: 100, type: "INCOME", accountId: "acc_1" };
+      mockedRepo.findTransactionById.mockResolvedValue(existingTx as any);
+      mockedRepo.findAccountById.mockResolvedValue(null);
+
+      await expect(
+        service.updateTransaction(userId, "tx_1", { accountId: "someone_elses_acc" }),
+      ).rejects.toThrow("Account not found");
+      expect(mockedRepo.updateTransaction).not.toHaveBeenCalled();
     });
   });
 
@@ -100,7 +123,7 @@ describe("Finance Service", () => {
 
       await service.createSavingContribution(userId, contributionData);
 
-      expect(mockedRepo.updateSavingGoal).toHaveBeenCalledWith("g1", expect.objectContaining({
+      expect(mockedRepo.updateSavingGoal).toHaveBeenCalledWith("g1", userId, expect.objectContaining({
         currentAmount: 1100,
         status: "REACHED"
       }), mockTx);

@@ -182,6 +182,10 @@ export async function refresh(
   };
 }
 
+export async function logout(userId: string): Promise<void> {
+  await repo.updateUser(userId, { refreshToken: null });
+}
+
 export async function getMe(userId: string): Promise<AuthUser | null> {
   const user = await repo.findById(userId);
   if (!user) return null;
