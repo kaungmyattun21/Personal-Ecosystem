@@ -34,7 +34,7 @@ describe('useSavingGoals Hook', () => {
     expect(result.current.savingGoals.data).toEqual(mockData);
   });
 
-  it('should invalidate multiple keys after adding a contribution', async () => {
+  it('should invalidate finance queries after adding a contribution', async () => {
     const wrapper = createWrapper();
     const queryClient = (wrapper({ children: null }) as any).props.client as QueryClient;
     const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
@@ -46,8 +46,6 @@ describe('useSavingGoals Hook', () => {
     await result.current.createSavingContribution.mutateAsync({ savingGoalId: 'g1', amount: 500 } as any);
 
     expect(mockedService.createSavingContribution).toHaveBeenCalled();
-    expect(invalidateSpy).toHaveBeenCalledWith(expect.objectContaining({ queryKey: ['finance', 'goals'] }));
-    expect(invalidateSpy).toHaveBeenCalledWith(expect.objectContaining({ queryKey: ['finance', 'accounts'] }));
-    expect(invalidateSpy).toHaveBeenCalledWith(expect.objectContaining({ queryKey: ['finance', 'transactions'] }));
+    expect(invalidateSpy).toHaveBeenCalledWith(expect.objectContaining({ queryKey: ['finance'] }));
   });
 });

@@ -186,6 +186,7 @@ export function useTransactionListController(options: UseTransactionListOptions 
   return {
     data: filteredAndSortedData,
     isLoading: transactions.isLoading,
+    isError: transactions.isError,
     search,
     setSearch,
     filterType,

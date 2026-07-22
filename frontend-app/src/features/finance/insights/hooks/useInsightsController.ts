@@ -18,6 +18,7 @@ import {
 } from "../deriveInsights";
 
 export interface InsightsContext {
+  isError: boolean;
   isNetWorthLoading: boolean;
   isSpendingLoading: boolean;
   netWorth: number;
@@ -39,6 +40,7 @@ export function useInsightsController(): InsightsContext {
 
   const [velocityTab, setVelocityTab] = useState<VelocityTab>("daily");
 
+  const isError = accounts.isError || savingGoals.isError || transactions.isError;
   const isNetWorthLoading = accounts.isPending || savingGoals.isPending;
   const isSpendingLoading = transactions.isPending;
 
@@ -78,6 +80,7 @@ export function useInsightsController(): InsightsContext {
   );
 
   return {
+    isError,
     isNetWorthLoading,
     isSpendingLoading,
     netWorth,

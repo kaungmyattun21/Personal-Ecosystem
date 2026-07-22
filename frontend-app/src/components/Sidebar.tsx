@@ -8,6 +8,7 @@ import { RootState } from "@/lib/store/store";
 import { setActiveTab as setFinanceTab } from "@/lib/store/features/finance/finance-slice";
 import { setActiveTab as setKitchenTab } from "@/lib/store/features/kitchen/kitchen-slice";
 import { setActiveTab as setHealthTab } from "@/lib/store/features/health/health-slice";
+import { logout } from "@/lib/logout";
 import {
   Home,
   Wallet,
@@ -65,6 +66,16 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useDispatch();
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } catch {
+      setIsLoggingOut(false);
+    }
+  };
 
   const activeFinanceTab = useSelector((state: RootState) => state.finance.activeTab);
   const activeKitchenTab = useSelector((state: RootState) => state.kitchen.activeTab);
@@ -216,9 +227,13 @@ export function Sidebar() {
               <Settings size={18} />
               <span>Settings</span>
             </Link>
-            <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-brand-teal-light dark:text-zinc-400 transition-all hover:bg-[#FEF2F2] dark:hover:bg-white/5 hover:text-red-500 dark:hover:text-red-400">
+            <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-brand-teal-light dark:text-zinc-400 transition-all hover:bg-[#FEF2F2] dark:hover:bg-white/5 hover:text-red-500 dark:hover:text-red-400 disabled:opacity-50 disabled:pointer-events-none"
+            >
               <LogOut size={18} />
-              <span>Logout</span>
+              <span>{isLoggingOut ? "Signing out..." : "Logout"}</span>
             </button>
           </div>
         </div>

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { TransactionFilters } from "../components/TransactionFilters";
 import { TransactionTable } from "../components/TransactionTable";
 import { useTransactionListController } from "../hooks/useTransactionListController";
+import { DataLoadError } from "@/features/finance/shared/components/DataLoadError";
 
 interface TransactionListViewProps {
   limit?: number;
@@ -45,6 +46,10 @@ export function TransactionListView({ limit, title }: TransactionListViewProps) 
         </Card>
       </div>
     );
+  }
+
+  if (ctrl.isError) {
+    return <DataLoadError message="Couldn't load your transactions." />;
   }
 
   return (

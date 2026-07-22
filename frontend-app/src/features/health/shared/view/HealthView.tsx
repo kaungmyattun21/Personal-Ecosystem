@@ -235,7 +235,7 @@ export function HealthView() {
               </p>
             </div>
             <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={weeklyHealthData}>
                   <defs>
                     <linearGradient id="colorSteps" x1="0" y1="0" x2="0" y2="1">
@@ -532,7 +532,7 @@ export function HealthView() {
               </div>
 
               <div className="h-[180px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={180}>
                   <LineChart data={weightData}>
                     <CartesianGrid strokeDasharray="6 6" vertical={false} strokeOpacity={0.05} />
                     <XAxis

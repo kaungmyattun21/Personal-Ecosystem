@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { BudgetTrackerContext } from "../hooks/useBudgetTrackerController";
 import { BudgetRow } from "../components/BudgetRow";
 import { BudgetTrackerSkeleton } from "../components/BudgetTrackerSkeleton";
+import { DataLoadError } from "@/features/finance/shared/components/DataLoadError";
 
 interface BudgetTrackerViewProps extends BudgetTrackerContext {
   compact?: boolean;
@@ -13,6 +14,7 @@ const COMPACT_LIMIT = 4;
 export function BudgetTrackerView({
   budgets,
   isLoading,
+  isError,
   selectedIds,
   onToggleSelect,
   onAddBudget,
@@ -22,6 +24,7 @@ export function BudgetTrackerView({
   compact,
 }: BudgetTrackerViewProps) {
   if (isLoading) return <BudgetTrackerSkeleton />;
+  if (isError) return <DataLoadError message="Couldn't load your budgets." />;
 
   const visibleBudgets = compact ? budgets.slice(0, COMPACT_LIMIT) : budgets;
 

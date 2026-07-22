@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { BillSchedulerContext } from "../hooks/useBillSchedulerController";
 import { BillRow } from "../components/BillRow";
 import { BillSchedulerSkeleton } from "../components/BillSchedulerSkeleton";
+import { DataLoadError } from "@/features/finance/shared/components/DataLoadError";
 
 interface BillSchedulerViewProps extends BillSchedulerContext {
   limit?: number;
@@ -11,6 +12,7 @@ interface BillSchedulerViewProps extends BillSchedulerContext {
 export function BillSchedulerView({
   bills,
   isLoading,
+  isError,
   onEditBill,
   onToggleStatus,
   onAddBill,
@@ -18,6 +20,7 @@ export function BillSchedulerView({
   limit,
 }: BillSchedulerViewProps) {
   if (isLoading) return <BillSchedulerSkeleton />;
+  if (isError) return <DataLoadError message="Couldn't load your bills." />;
 
   return (
     <Card className="h-full p-8 flex flex-col border-none bg-white dark:bg-zinc-900/50 shadow-[0_12px_32px_-4px_rgba(4,39,39,0.04)] rounded-[24px] gap-8">

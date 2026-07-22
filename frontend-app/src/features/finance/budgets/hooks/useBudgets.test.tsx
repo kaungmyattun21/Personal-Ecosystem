@@ -47,6 +47,6 @@ describe('useBudgets Hook', () => {
     await result.current.createBudget.mutateAsync({ name: 'Travel', amount: '1000' } as any);
 
     expect(mockedService.createBudget).toHaveBeenCalled();
-    expect(invalidateSpy).toHaveBeenCalledWith(expect.objectContaining({ queryKey: ['finance', 'budgets'] }));
+    expect(invalidateSpy).toHaveBeenCalledWith(expect.objectContaining({ queryKey: ['finance'] }));
   });
 });

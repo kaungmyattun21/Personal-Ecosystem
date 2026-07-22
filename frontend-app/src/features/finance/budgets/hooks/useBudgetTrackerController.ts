@@ -18,6 +18,7 @@ import {
 export interface BudgetTrackerContext {
   budgets: BudgetWithProgress[];
   isLoading: boolean;
+  isError: boolean;
   selectedIds: string[];
   onToggleSelect: (id: string) => void;
   onAddBudget: () => void;
@@ -98,6 +99,7 @@ export function useBudgetTrackerController(): BudgetTrackerContext {
   return {
     budgets: budgetProgress,
     isLoading: budgets.isPending,
+    isError: budgets.isError,
     selectedIds,
     onToggleSelect,
     onAddBudget,

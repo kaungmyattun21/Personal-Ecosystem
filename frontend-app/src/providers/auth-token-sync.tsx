@@ -9,7 +9,7 @@ export function AuthTokenSync() {
 
   useEffect(() => {
     if (session?.error === "RefreshAccessTokenError") {
-      signOut({ callbackUrl: "/" });
+      signOut({ callbackUrl: "/login" });
       return;
     }
     setAuthToken(session?.accessToken ?? null);

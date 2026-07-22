@@ -2,11 +2,9 @@
 
 import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
+import { toast } from "sonner";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { NEXT_PUBLIC_API_URL } from "@/lib/env";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,49 +21,39 @@ import {
   ShieldCheck,
   CheckCircle2,
   ArrowRight,
-  User,
 } from "lucide-react";
+import Link from "next/link";
 
-function RegisterForm() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleCredentialsSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
     try {
-      // 1. Register the user
-      await axios.post(`${NEXT_PUBLIC_API_URL}/auth/register`, {
-        name,
-        email,
-        password,
-      });
-
-      // 2. Automatically log them in
       const res = await signIn("credentials", {
         redirect: false,
         email,
         password,
       });
-
       if (res?.error) {
-        setError("Registration succeeded but login failed.");
+        const message = "Invalid email or password";
+        setError(message);
+        toast.error(message);
       } else {
         router.push(callbackUrl);
       }
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Registration failed");
-      } else {
-        setError("Registration failed");
-      }
+    } catch {
+      const message = "Something went wrong. Please try again.";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -91,44 +79,24 @@ function RegisterForm() {
             <Cpu className="h-7 w-7 text-white" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-brand-teal dark:text-zinc-100">
-            Create an Account
+            Welcome Back
           </h1>
           <p className="mt-1.5 text-sm text-brand-teal-light dark:text-zinc-400">
-            Join FinMind to manage your budget intelligently
+            Enter your credentials to access FinMind
           </p>
         </CardHeader>
 
         <Separator className="border-t border-black/5 dark:border-white/5 bg-transparent" />
 
         <CardContent className="px-8 pb-6 pt-8">
-          <form className="space-y-4" onSubmit={handleRegister}>
-            {error && (
-              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive border border-destructive/20">
-                {error}
-              </div>
-            )}
+          <form className="space-y-4" onSubmit={handleCredentialsSignIn}>
             <div className="space-y-3">
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-zinc-500" />
-                <Input
-                  id="name"
-                  placeholder="Full Name (optional)"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  disabled={isLoading}
-                  autoComplete="name"
-                  className="h-12 rounded-xl border-black/5 dark:border-white/5 bg-slate-100 dark:bg-brand-teal/20 pl-10 text-sm text-brand-teal dark:text-zinc-100 transition-colors focus-visible:border-brand-emerald/50 focus-visible:ring-brand-emerald/20 placeholder:text-zinc-500 dark:placeholder:text-zinc-600"
-                />
-              </div>
-
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-zinc-500" />
                 <Input
                   id="email"
                   placeholder="Email Address"
                   type="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
@@ -145,23 +113,27 @@ function RegisterForm() {
                   id="password"
                   placeholder="Password"
                   type="password"
-                  required
-                  minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
-                  autoComplete="new-password"
+                  autoComplete="current-password"
                   className="h-12 rounded-xl border-black/5 dark:border-white/5 bg-slate-100 dark:bg-brand-teal/20 pl-10 text-sm text-brand-teal dark:text-zinc-100 transition-colors focus-visible:border-brand-emerald/50 focus-visible:ring-brand-emerald/20 placeholder:text-zinc-500 dark:placeholder:text-zinc-600"
                 />
               </div>
             </div>
+
+            {error && (
+              <p className="text-sm font-medium text-rose-600 dark:text-rose-400" role="alert">
+                {error}
+              </p>
+            )}
 
             <Button
               type="submit"
               disabled={isLoading}
               className="group h-12 w-full rounded-xl bg-brand-emerald text-[15px] font-semibold text-white transition-all hover:bg-brand-emerald/90 dark:hover:shadow-[0_0_15px_rgba(10,176,139,0.2)] border-none shadow-[inset_0_-1px_1px_rgba(0,0,0,0.1)]"
             >
-              {isLoading ? "Creating Account..." : "Sign Up"}
+              {isLoading ? "Signing in..." : "Sign In"}
               {!isLoading && (
                 <ArrowRight className="ml-2 h-[18px] w-[18px] transition-transform group-hover:translate-x-0.5" />
               )}
@@ -213,12 +185,12 @@ function RegisterForm() {
             </Button>
 
             <div className="text-center text-[13.5px] text-zinc-600 dark:text-zinc-400 mt-4">
-              Already have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
-                href="/login"
+                href="/register"
                 className="font-medium text-brand-emerald hover:text-brand-emerald/80 hover:underline underline-offset-4 transition-colors"
               >
-                Sign In
+                Sign Up
               </Link>
             </div>
           </form>
@@ -226,17 +198,17 @@ function RegisterForm() {
 
         <Separator className="border-t border-black/5 dark:border-white/5 bg-transparent" />
 
-        <CardFooter className="flex justify-between px-7 py-4 bg-brand-bg-light/50 dark:bg-black/20">
+        <CardFooter className="flex justify-between px-7 py-4 bg-slate-50/50 dark:bg-[#0a0b10]/50">
           <div className="flex w-full items-center justify-center gap-5 sm:gap-7">
-            <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest text-brand-emerald">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest text-[#32b57b]">
               <ShieldCheck className="h-3.5 w-3.5 opacity-90" />
               ENCRYPTED
             </div>
-            <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest text-brand-emerald">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest text-[#32b57b]">
               <Cpu className="h-3.5 w-3.5 opacity-90" />
               AI POWERED
             </div>
-            <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest text-brand-emerald">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest text-[#32b57b]">
               <CheckCircle2 className="h-3.5 w-3.5 opacity-90" />
               SECURE
             </div>
@@ -247,10 +219,10 @@ function RegisterForm() {
   );
 }
 
-export default function Register() {
+export default function Login() {
   return (
     <Suspense>
-      <RegisterForm />
+      <LoginForm />
     </Suspense>
   );
 }

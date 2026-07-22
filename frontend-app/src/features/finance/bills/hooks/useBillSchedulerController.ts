@@ -17,6 +17,7 @@ import { findLatestBillTransaction, sortBillsByDueDate } from "../deriveBillStat
 export interface BillSchedulerContext {
   bills: Bill[];
   isLoading: boolean;
+  isError: boolean;
   onEditBill: (id: string) => void;
   onToggleStatus: (bill: Bill) => Promise<void>;
   onAddBill: () => void;
@@ -100,6 +101,7 @@ export function useBillSchedulerController(limit?: number): BillSchedulerContext
   return {
     bills: sortedBills,
     isLoading: bills.isPending,
+    isError: bills.isError,
     onEditBill,
     onToggleStatus,
     onAddBill,
